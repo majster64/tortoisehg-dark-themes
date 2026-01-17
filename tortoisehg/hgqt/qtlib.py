@@ -1,6 +1,7 @@
 # qtlib.py - Qt utility code
 #
 # Copyright 2010 Steve Borho <steve@borho.org>
+# Copyright (C) 2026 Peter Demcak <majster64@gmail.com> (dark theme)
 #
 # This software may be used and distributed according to the terms of the
 # GNU General Public License version 2 or any later version.
@@ -118,6 +119,8 @@ try:
     openflags: int = win32con.CREATE_NO_WINDOW
 except ImportError:
     openflags = 0
+
+from .theme import THEME
 
 _W = TypeVar('_W', bound=QWidget)
 
@@ -463,6 +466,101 @@ _thgstyles = {
     'topic.active': 'black bold #2ecc71_background',
 }
 
+def get_thgstyles_dark():
+    return {
+    # --- File status -------------------------------------------------
+    'status.modified': THEME.file_modified.name(),
+    'status.added': THEME.file_added.name(),
+    'status.removed': THEME.file_removed.name(),
+    'status.deleted': THEME.file_deleted.name(),
+    'status.unknown': THEME.file_unknown.name(),
+    'status.missing': THEME.file_missing.name(),
+    'status.ignored': THEME.file_ignored.name(),
+    'status.clean': THEME.file_clean.name(),
+
+    # --- UI feedback -------------------------------------------------
+    'ui.error': (
+        f'{THEME.error_text.name()} bold '
+        f'{THEME.error_background.name()}_background'
+    ),
+    'ui.warning': (
+        f'{THEME.warning_text.name()} '
+        f'{THEME.warning_background.name()}_background'
+    ),
+    'ui.info': THEME.ui_info.name(),
+    'ui.success': (
+        f'{THEME.success_text.name()} '
+        f'{THEME.success_background.name()}_background'
+    ),
+
+    # Log / revision file list
+    'log.modified': (
+        f'{THEME.diff_start.name()} '
+        f'{THEME.backgroundLighter.name()}_background'
+    ),
+    'log.added': (
+        f'{THEME.diff_added.name()} '
+        f'{THEME.success_background.name()}_background'
+    ),
+    'log.removed': (
+        f'{THEME.diff_removed.name()} '
+        f'{THEME.error_background.name()}_background'
+    ),
+    'log.untracked': (
+        f'{THEME.ui_info.name()} '
+        f'{THEME.backgroundLighter.name()}_background'
+    ),
+    'log.warning': (
+        f'{THEME.warning_text.name()} '
+        f'{THEME.warning_background.name()}_background'
+    ),
+    'log.topic': (
+        f'{THEME.chip_text.name()} bold '
+        f'{THEME.chip_topic_background.name()}_background'
+    ),
+    'topic.active': (
+        f'{THEME.chip_text.name()} bold '
+        f'{THEME.chip_topic_background.name()}_background'
+    ),
+
+    # Branch / tag / bookmark (description column – chips)
+    'log.branch': (
+        f'{THEME.chip_text.name()} '
+        f'{THEME.chip_branch_background.name()}_background'
+    ),
+    'log.tag': (
+        f'{THEME.chip_text.name()} '
+        f'{THEME.chip_tag_background.name()}_background'
+    ),
+    'log.bookmark': (
+        f'{THEME.chip_text.name()} '
+        f'{THEME.chip_bookmark_background.name()}_background'
+    ),
+    'log.curbookmark': (
+        f'{THEME.chip_text.name()} bold '
+        f'{THEME.chip_curbookmark_background.name()}_background'
+    ),
+
+    # Topics / patches / resolve
+    'log.patch': (
+        f'{THEME.text.name()} '
+        f'{THEME.backgroundLighter.name()}_background'
+    ),
+    'log.unapplied_patch': (
+        f'{THEME.text_margin.name()} '
+        f'{THEME.backgroundLighter.name()}_background'
+    ),
+
+    'resolve.unresolved': THEME.error_text.name(),
+    'resolve.resolved': THEME.success_text.name(),
+
+    # --- Emphasis / state --------------------------------------------
+    'ui.emphasis': f'{THEME.text.name()} bold',
+    'ui.dim': THEME.text_margin.name(),
+    'ui.disabled': THEME.text_disabled.name(),
+    }
+
+
 thgstylesheet = '* { white-space: pre; font-family: monospace;' \
                 ' font-size: 9pt; }'
 tbstylesheet = 'QToolBar { border: 0px }'
@@ -474,7 +572,10 @@ def configstyles(ui: uimod.ui) -> None:
         _styles.update(pycompat.rapply(pycompat.sysstr, extstyle))
 
     # tortoisehg defines a few labels and default effects
-    _styles.update(_thgstyles)
+    if THEME.enabled:
+        _styles.update(get_thgstyles_dark())
+    else:
+        _styles.update(_thgstyles)
 
     # allow the user to override
     for status, cfgeffects in ui.configitems(b'color'):  # type: Tuple[bytes, bytes]
