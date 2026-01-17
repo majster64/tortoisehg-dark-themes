@@ -2,6 +2,7 @@
 #
 # Copyright (C) 2007-2010 Logilab. All rights reserved.
 # Copyright (C) 2010 Adrian Buehlmann <adrian@cadifra.com>
+# Copyright (C) 2026 Peter Demcak <majster64@gmail.com> (dark theme)
 #
 # This software may be used and distributed according to the terms of the
 # GNU General Public License version 2 or any later version.
