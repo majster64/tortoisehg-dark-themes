@@ -239,6 +239,9 @@ class DiffLexerSelector(_ScriptLexerSelector):
             lexer.setColor(THEME.diff_removed, Qsci.QsciLexerDiff.LineRemoved) # - removed lines
             #lexer.setColor(THEME.diff_start, Qsci.QsciLexerDiff.FileHeader) # --- / +++ file header (optional)
 
+            # Fix "No newline at end of file"
+            lexer.setColor(THEME.text_margin, Qsci.QsciLexerDiff.Comment)
+
         else:
             for label, i in (('diff.inserted', Qsci.QsciLexerDiff.LineAdded),
                             ('diff.deleted', Qsci.QsciLexerDiff.LineRemoved),
