@@ -1,6 +1,7 @@
 # cmdui.py - A widget to execute Mercurial command for TortoiseHg
 #
 # Copyright 2010 Yuki KODAMA <endflow.net@gmail.com>
+# Copyright (C) 2026 Peter Demcak <majster64@gmail.com> (dark theme)
 #
 # This software may be used and distributed according to the terms of the
 # GNU General Public License version 2 or any later version.
@@ -51,6 +52,8 @@ from . import (
     qtlib,
     qscilib,
 )
+
+from .theme import THEME
 
 
 def startProgress(topic, status):
@@ -229,6 +232,10 @@ class LogWidget(qscilib.ScintillaCompat):
         self.setWrapMode(QsciScintilla.WrapMode.WrapCharacter)
         self._initfont()
         self._initmarkers()
+        
+        if THEME.enabled:
+            self._apply_dark_console_markers()
+            
         qscilib.unbindConflictedKeys(self)
 
     def _initfont(self):
@@ -249,6 +256,13 @@ class LogWidget(qscilib.ScintillaCompat):
                 self.setMarkerBackgroundColor(c, m)
             # NOTE: self.setMarkerForegroundColor() doesn't take effect,
             # because it's a *Background* marker.
+
+    def _apply_dark_console_markers(self):
+        # Dark console colors
+        self.setMarkerBackgroundColor(THEME.ui_error, self._markers.get('ui.error'))
+        self.setMarkerBackgroundColor(THEME.ui_warning, self._markers.get('ui.warning'))
+        self.setMarkerBackgroundColor(THEME.ui_control, self._markers.get('control'))
+
 
     @pyqtSlot(str, str)
     def appendLog(self, msg: str, label: str):
