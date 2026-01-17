@@ -24,6 +24,7 @@ filelistview.py ^
 fileview.py ^
 graph.py ^
 lexers.py ^
+merge.py ^
 messageentry.py ^
 qscilib.py ^
 qtapp.py ^
@@ -31,6 +32,7 @@ qtlib.py ^
 repomodel.py ^
 repoview.py ^
 repowidget.py ^
+revpanel.py ^
 settings.py ^
 status.py ^
 theme.py ^

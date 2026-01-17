@@ -2,6 +2,7 @@
 #
 # Copyright 2010 Yuki KODAMA <endflow.net@gmail.com>
 # Copyright 2011 Steve Borho <steve@borho.org>
+# Copyright (C) 2026 Peter Demcak <majster64@gmail.com> (dark theme)
 #
 # This software may be used and distributed according to the terms of the
 # GNU General Public License version 2 or any later version.
@@ -48,6 +49,8 @@ from . import (
     thgrepo,
     wctxcleaner,
 )
+
+from .theme import THEME
 
 MARGINS = (8, 0, 0, 0)
 
@@ -188,7 +191,13 @@ class SummaryPage(BasePage):
         def markup_func(widget, item, value):
             if item == 'createsnewhead' and value is True:
                 text = _('Creates new head!')
-                return qtlib.markup(text, fg='red', weight='bold')
+                if THEME.enabled:
+                    return qtlib.markup(text,
+                                        fg=THEME.warning_text.name(), 
+                                        bg=THEME.warning_background.name(),
+                                        weight='bold')
+                else:
+                    return qtlib.markup(text, fg='red', weight='bold')
             raise csinfo.UnknownItem(item)
         custom = csinfo.custom(markup=markup_func)
         create = csinfo.factory(repo, custom, style, withupdate=True)

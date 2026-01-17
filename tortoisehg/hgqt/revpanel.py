@@ -20,6 +20,8 @@ from . import (
     qtlib,
 )
 
+from .theme import THEME
+
 def label_func(widget, item, ctx):
     if item == 'cset':
         if isinstance(ctx.rev(), str):
@@ -207,7 +209,13 @@ def nomarkup(widget, item, value):
     if item == 'createsnewhead':
         if value is True:
             text = _('Creates new head!')
-            return qtlib.markup(text, fg='red', weight='bold')
+            if THEME.enabled:
+                return qtlib.markup(text,
+                                    fg=THEME.warning_text.name(), 
+                                    bg=THEME.warning_background.name(),
+                                    weight='bold')
+            else:
+                return qtlib.markup(text, fg='red', weight='bold')
         raise csinfo.UnknownItem(item)
     elif item == 'createsorphans':
         if value is True:
@@ -217,7 +225,13 @@ def nomarkup(widget, item, value):
     elif item == 'reopensbranchhead':
         if value is True:
             text = _('Reopens closed branch head!')
-            return qtlib.markup(text, fg='red', weight='bold')
+            if THEME.enabled:
+                return qtlib.markup(text,
+                                    fg=THEME.warning_text.name(), 
+                                    bg=THEME.warning_background.name(),
+                                    weight='bold')
+            else:
+                return qtlib.markup(text, fg='red', weight='bold')
         raise csinfo.UnknownItem(item)
     for cset in value:
         if hglib.isbasestring(cset):
