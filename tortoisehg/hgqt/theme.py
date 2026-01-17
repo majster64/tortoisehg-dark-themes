@@ -46,10 +46,10 @@ BUILTIN_THEMES = {
             'text': QColor('#A0AA82'),
             'text_disabled': QColor('#787878'),
             'text_margin': QColor('#96966E'),
-            'text_author': QColor('#999999'),
+            'text_author': QColor('#999999'),          # for Author/Age/Tags/Phase 
             'text_description': QColor('#A0AA82'),     # for revision Description
             'text_selection': QColor('#d4d4d4'),
-            'selection_background': QColor('#264F78'), # for Author/Age/Tags/Phase
+            'selection_background': QColor('#2E343A'),
             'selection_text': QColor('#d4d4d4'),
             'caret_foreground': QColor('#dcdcdc'),
 
@@ -117,7 +117,7 @@ BUILTIN_THEMES = {
             'text_author': QColor('#9D9D9D'),
             'text_description': QColor('#DCDCAA'),
             'text_selection': QColor('#CCCCCC'),
-            'selection_background': QColor('#2B445F'),
+            'selection_background': QColor('#30363D'),
             'selection_text': QColor('#d4d4d4'),
             'caret_foreground': QColor('#dcdcdc'),
 
