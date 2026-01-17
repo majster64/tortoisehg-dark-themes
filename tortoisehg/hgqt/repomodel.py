@@ -1,5 +1,6 @@
 # Copyright (c) 2009-2010 LOGILAB S.A. (Paris, FRANCE).
 # http://www.logilab.fr/ -- mailto:contact@logilab.fr
+# Copyright (C) 2026 Peter Demcak <majster64@gmail.com> (dark theme)
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
@@ -53,6 +54,8 @@ from . import (
     graph,
     graphopt,
 )
+
+from .theme import THEME
 
 if typing.TYPE_CHECKING:
     from typing import (
@@ -558,6 +561,39 @@ class HgRepoListModel(QAbstractTableModel):
             if (gnode.shape == graph.NODE_SHAPE_UNAPPLIEDPATCH
                 and index.column() != DescColumn):
                 return UNAPPLIED_PATCH_COLOR
+            
+            if THEME.enabled:
+                # Unapplied patch (keep behavior)
+                if (gnode.shape == graph.NODE_SHAPE_UNAPPLIEDPATCH
+                    and index.column() != DescColumn):
+                    return UNAPPLIED_PATCH_COLOR
+
+                col = index.column()
+
+                # Description column
+                if col == DescColumn:
+                    return THEME.text
+
+                # Revision number / node
+                if col in (NodeColumn, GitNodeColumn):
+                    return THEME.text
+
+                # Author
+                if col == AuthorColumn:
+                    return THEME.text_author
+
+                # Age / Date
+                if col == AgeColumn:
+                    return THEME.text_author
+
+                # Tags / Branch / Bookmark column
+                if col == TagsColumn:
+                    return THEME.text_author
+
+                # Phase
+                if col == PhaseColumn:
+                    return THEME.text_author
+
         if role == GraphNodeRole:
             return gnode
         # repo may be changed while reading in case of postpull=rebase for
