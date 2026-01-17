@@ -1,6 +1,7 @@
 # workbench.py - main TortoiseHg Window
 #
 # Copyright (C) 2007-2010 Logilab. All rights reserved.
+# Copyright (C) 2026 Peter Demcak <majster64@gmail.com> (dark theme)
 #
 # This software may be used and distributed according to the terms of the
 # GNU General Public License version 2 or any later version.
@@ -16,6 +17,8 @@ import subprocess
 import sys
 
 from .qtcore import (
+    QPoint,
+    QRect,
     QSettings,
     Qt,
     pyqtSlot,
@@ -30,7 +33,12 @@ from .qtgui import (
     QMainWindow,
     QMenu,
     QMenuBar,
+    QPainter,
+    QPen,
+    QProxyStyle,
     QShortcut,
+    QStyle,
+    QStyleOptionViewItem,
     QSizePolicy,
     QToolBar,
 )
@@ -57,6 +65,296 @@ from .docklog import LogDockWidget
 from .reporegistry import RepoRegistryView
 from .settings import SettingsDialog
 
+from .qtgui import QPalette, QColor
+from PyQt5.QtCore import QObject, QEvent
+from PyQt5.QtWidgets import QWidget
+from .theme import THEME
+import sys
+
+def apply_dark_palette(app):
+    pal = QPalette()
+
+    # Basic colors
+    pal.setColor(QPalette.Window, THEME.background)
+    pal.setColor(QPalette.Base, THEME.background)
+    pal.setColor(QPalette.AlternateBase, THEME.backgroundLighter)
+
+    pal.setColor(QPalette.Text, THEME.text)
+    pal.setColor(QPalette.WindowText, THEME.text)
+
+    pal.setColor(QPalette.Highlight, THEME.selection_background)
+    pal.setColor(QPalette.HighlightedText, THEME.selection_text)
+
+    # Disabled text
+    pal.setColor(QPalette.Disabled, QPalette.Text, THEME.text_disabled)
+
+    app.setPalette(pal)
+
+def build_dark_stylesheet(THEME):
+    c = THEME
+
+    return f"""
+    /* === Base widgets === */
+    QWidget {{
+        background-color: {c.control_background.name()};
+        color: {c.control_text.name()};
+    }}
+
+    QMainWindow, QDialog {{
+        background-color: {c.background.name()};
+    }}
+
+    /* === Text inputs & views === */
+    QTextEdit, QPlainTextEdit, QLineEdit,
+    QListView, QTreeView, QTableView {{
+        background-color: {c.background.name()};
+        color: {c.control_text.name()};
+        border: 1px solid {c.control_border.name()};
+        selection-background-color: {c.control_background.name()};
+        selection-color: {c.control_text.name()};
+    }}
+
+    QTreeView, QListView, QTableView {{
+        alternate-background-color: {c.backgroundLighter.name()};
+    }}
+
+    /* === Buttons === */
+    QPushButton {{
+        background-color: {c.background.name()};
+        color: {c.control_text.name()};
+        border: 1px solid {c.control_border.name()};
+        padding: 5px 10px;
+        border-radius: 2px;
+    }}
+
+    QPushButton:hover {{
+        background-color: {c.control_hover.name()};
+    }}
+
+    QPushButton:pressed {{
+        background-color: {c.control_pressed.name()};
+    }}
+
+    /* === Menus === */
+    QMenuBar, QMenu {{
+        background-color: {c.control_background.name()};
+        color: {c.control_text.name()};
+        border: 1px solid {c.control_border.name()};
+    }}
+
+    QMenu::item:selected {{
+        background-color: {c.control_pressed.name()};
+    }}
+
+    /* === Toolbars & statusbar === */
+    QToolBar {{
+        background-color: {c.control_background.name()};
+        border: 1px solid {c.control_border.name()};
+    }}
+
+    QStatusBar {{
+        background-color: {c.background.name()};
+        color: {c.control_text.name()};
+        border-top: 1px solid #2d2d2d;
+    }}
+
+    /* === Tabs === */
+    QTabWidget::pane {{
+        border: 1px solid {c.control_border.name()};
+        background-color: {c.background.name()};
+    }}
+
+    QTabBar::tab {{
+        background-color: {c.control_background.name()};
+        color: {c.control_text.name()};
+        border: 1px solid {c.control_border.name()};
+        padding: 5px;
+    }}
+
+    QTabBar::tab:selected {{
+        background-color: {c.control_border.name()};
+        color: {c.text_selection.name()};
+    }}
+
+    /* === Header views === */
+    QHeaderView {{
+        background-color: {c.background.name()};
+    }}
+
+    QHeaderView::section {{
+        background-color: {c.backgroundLighter.name()};
+        color: {c.header_text.name()};
+        padding: 4px 6px;
+        border: 1px solid {c.control_border.name()};
+        font-size: 9pt;
+    }}
+    """
+
+def is_windows_11():
+    if sys.platform != 'win32':
+        return False
+    # Windows 11 reports build >= 22000
+    return int(platform.version().split('.')[-1]) >= 22000
+
+def qcolor_to_bgr_dword(color: QColor) -> int:
+    return (color.blue() << 16) | (color.green() << 8) | color.red()
+
+def enable_dark_title_bar(window):
+    """Enable dark title bar on Windows 10/11 with graceful fallback."""
+    import sys
+    if sys.platform != 'win32':
+        return
+
+    import ctypes
+    from ctypes import wintypes
+    import platform
+
+    hwnd = int(window.winId())
+    TRUE = wintypes.BOOL(1)
+
+    try:
+        dwmapi = ctypes.WinDLL('dwmapi')
+
+        # Enable immersive dark mode (Win10+)
+        for attr in (20, 19):
+            dwmapi.DwmSetWindowAttribute(
+                wintypes.HWND(hwnd),
+                wintypes.DWORD(attr),
+                ctypes.byref(TRUE),
+                ctypes.sizeof(TRUE)
+            )
+
+        build = int(platform.version().split('.')[-1])
+        if build >= 22000:
+            # Caption background
+            caption_bg = wintypes.DWORD(
+                qcolor_to_bgr_dword(THEME.titlebar_background)
+            )
+            dwmapi.DwmSetWindowAttribute(
+                wintypes.HWND(hwnd),
+                wintypes.DWORD(35),  # DWMWA_CAPTION_COLOR
+                ctypes.byref(caption_bg),
+                ctypes.sizeof(caption_bg)
+            )
+
+            # Caption text
+            caption_text = wintypes.DWORD(
+                qcolor_to_bgr_dword(THEME.titlebar_text)
+            )
+            dwmapi.DwmSetWindowAttribute(
+                wintypes.HWND(hwnd),
+                wintypes.DWORD(36),  # DWMWA_TEXT_COLOR
+                ctypes.byref(caption_text),
+                ctypes.sizeof(caption_text)
+            )
+
+    except Exception:
+        # Safe fallback
+        pass
+
+class DarkTitleBarFilter(QObject):
+    def __init__(self, main_window):
+        super().__init__()
+        self._main_window = main_window
+        self._applied = set()
+
+    def eventFilter(self, obj, event):
+        # Filter may receive non-QWidget objects → ignore
+        if not isinstance(obj, QWidget):
+            return False
+
+        # Only act on Show events
+        if event.type() != QEvent.Type.Show:
+            return False
+
+        # Only top-level windows
+        if obj.parent() is not None:
+            return False
+
+        # Never touch dialogs (QMessageBox, QDialog, etc.)
+        if obj.isModal() or (obj.windowFlags() & Qt.Dialog):
+            return False
+
+        # Only apply to the main window
+        if obj is not self._main_window:
+            return False
+
+        # Apply only once
+        if obj in self._applied:
+            return False
+
+        self._applied.add(obj)
+
+        try:
+            enable_dark_title_bar(obj)
+        except Exception:
+            pass
+
+        return False
+
+class DarkItemViewCheckStyle(QProxyStyle):
+    def drawPrimitive(self, element, option, painter, widget=None):
+        if THEME.enabled and element == QStyle.PrimitiveElement.PE_IndicatorItemViewItemCheck:
+            painter.save()
+            painter.setRenderHint(QPainter.RenderHint.Antialiasing, False)
+
+            # Use a reliable rect for item-view checkbox
+            style = self.baseStyle()
+            rect = style.subElementRect(QStyle.SubElement.SE_ItemViewItemCheckIndicator, option, widget)
+            rect = rect.adjusted(2, 2, -2, -2)
+
+            state = option.state
+            is_checked = bool(state & QStyle.StateFlag.State_On)
+            is_partial = bool(state & QStyle.StateFlag.State_NoChange)
+            is_enabled = bool(state & QStyle.StateFlag.State_Enabled)
+
+            # Colors
+            border_color = THEME.text if is_enabled else THEME.text_disabled
+            mark_color = border_color
+
+            # Border (square)
+            pen = QPen(border_color)
+            pen.setWidth(1)
+            painter.setPen(pen)
+            painter.setBrush(Qt.BrushStyle.NoBrush)
+            painter.drawRect(rect)
+
+            # Checkmark / tristate
+            pen.setWidth(2)
+            painter.setPen(pen)
+
+            # Shift checkmark by +1px right and +1px down
+            dx = 1
+            dy = 1
+
+             # Enable antialiasing
+            painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
+
+            if is_checked:
+                # Classic checkmark
+                p1 = QPoint(rect.left() + 2 + dx, rect.center().y() + 1 + dy)
+                p2 = QPoint(rect.center().x() - 1 + dx, rect.bottom() - 2 + dy)
+                p3 = QPoint(rect.right() - 2 + dx, rect.top() + 2 + dy)
+                painter.drawLine(p1, p2)
+                painter.drawLine(p2, p3)
+                
+            elif is_partial:
+                # Small centered square
+                size = 7
+                cx = rect.center().x()
+                cy = rect.center().y()
+                half = size // 2
+                square = QRect(cx - half + dx, cy - half + dy, size, size)
+                painter.setPen(Qt.PenStyle.NoPen)
+                painter.setBrush(mark_color)
+                painter.drawRect(square)
+                painter.setRenderHint(QPainter.RenderHint.Antialiasing, False)
+
+            painter.restore()
+            return  # stop Qt from drawing anything else
+
+        super().drawPrimitive(element, option, painter, widget)
+
 class Workbench(QMainWindow):
     """hg repository viewer/browser application"""
 
@@ -69,6 +367,21 @@ class Workbench(QMainWindow):
         self._repomanager.configChanged.connect(self._setupUrlComboIfCurrent)
 
         self.setupUi()
+
+        if THEME.enabled and sys.platform == 'win32':
+            app = QApplication.instance()
+            self._dark_titlebar_filter = DarkTitleBarFilter(self)
+            app.installEventFilter(self._dark_titlebar_filter)
+        
+        if THEME.enabled:
+           # Apply dark mode stylesheet
+           app = QApplication.instance()
+           apply_dark_palette(app)
+
+           base = app.setStyle("Fusion") # Needed for scrollbars
+           app.setStyle(DarkItemViewCheckStyle(base))
+           app.setStyleSheet(build_dark_stylesheet(THEME))
+
         repomanager.busyChanged.connect(self._onBusyChanged)
         repomanager.progressReceived.connect(self.statusbar.setRepoProgress)
 
