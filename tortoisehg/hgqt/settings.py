@@ -1,6 +1,7 @@
 # settings.py - Configuration dialog for TortoiseHg and Mercurial
 #
 # Copyright 2010 Steve Borho <steve@borho.org>
+# Copyright (C) 2026 Peter Demcak <majster64@gmail.com> (dark theme)
 #
 # This software may be used and distributed according to the terms of the
 # GNU General Public License version 2 or any later version.
@@ -54,6 +55,8 @@ from .qtgui import (
     QVBoxLayout,
     QWidget,
 )
+
+from . import theme
 
 from mercurial import (
     error,
@@ -602,6 +605,10 @@ def issuePluginVisible():
     except:
         return False
 
+def findThemes():
+    # UI strings (capitalized) are handled by SettingsCombo
+    return [name.capitalize() for name in theme.available_themes()]
+
 def findDiffTools():
     return sorted(hglib.tounicode(t) for t in hglib.difftools(hglib.loadui()))
 
@@ -769,6 +776,11 @@ INFO = (
         _('Show full authorname in Logview. If not enabled, '
           'only a short part, usually name without email is shown. '
           'Default: False')),
+    _fi(_('Theme'), 'ui.theme', (genDeferredCombo, findThemes),
+        _('Select application theme. '
+        'Unspecified uses the default light theme. '
+        'Theme changes require application restart.'),
+        restartneeded=True, globalonly=True),
     _fi(_('Task Tabs'), 'tortoisehg.tasktabs',
         (genDefaultCombo, ['east', 'west', 'off']),
         _('Show tabs along the side of the bottom half of each repo '
