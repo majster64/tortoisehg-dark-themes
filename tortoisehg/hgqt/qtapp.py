@@ -2,6 +2,7 @@
 #
 # Copyright 2008 Steve Borho <steve@borho.org>
 # Copyright 2008 TK Soh <teekaysoh@gmail.com>
+# Copyright (C) 2026 Peter Demcak <majster64@gmail.com> (dark theme)
 #
 # This software may be used and distributed according to the terms of the
 # GNU General Public License version 2 or any later version.
@@ -18,6 +19,7 @@ from .qtcore import (
     PYQT_VERSION,
     PYQT_VERSION_STR,
     QByteArray,
+    QEvent,
     QIODevice,
     QLibraryInfo,
     QObject,
@@ -65,6 +67,9 @@ from . import (
     thgrepo,
     workbench,
 )
+
+from PyQt5.QtWidgets import QWidget, QMainWindow, QDialog
+from .theme import THEME
 
 if os.name == 'nt' and getattr(sys, 'frozen', False):
     # load QtSvg4.dll and QtXml4.dll by .pyd, so that imageformats/qsvg4.dll
@@ -292,6 +297,111 @@ class ExceptionCatcher(QObject):
             # nop for instant SIGINT handling
             pass
 
+def is_windows_11():
+    if sys.platform != 'win32':
+        return False
+    # Windows 11 reports build >= 22000
+    return int(platform.version().split('.')[-1]) >= 22000
+
+def qcolor_to_bgr_dword(color: QColor) -> int:
+    return (color.blue() << 16) | (color.green() << 8) | color.red()
+
+def enable_dark_title_bar(window):
+    if sys.platform != 'win32':
+        return
+
+    try:
+        hwnd = int(window.winId())
+    except Exception:
+        return
+
+    try:
+        import ctypes
+        from ctypes import wintypes
+        import platform
+
+        dwmapi = ctypes.WinDLL("dwmapi")
+        user32 = ctypes.WinDLL("user32")
+        TRUE = wintypes.BOOL(1)
+
+        # Immersive dark mode (Win10/11)
+        dwmapi.DwmSetWindowAttribute(wintypes.HWND(hwnd), wintypes.DWORD(20), ctypes.byref(TRUE), ctypes.sizeof(TRUE))
+        dwmapi.DwmSetWindowAttribute(wintypes.HWND(hwnd), wintypes.DWORD(19), ctypes.byref(TRUE), ctypes.sizeof(TRUE))
+
+        build = int(platform.version().split(".")[-1])
+
+        if build >= 22000:
+            bg = wintypes.DWORD(qcolor_to_bgr_dword(THEME.titlebar_background))
+            fg = wintypes.DWORD(qcolor_to_bgr_dword(THEME.titlebar_text))
+            dwmapi.DwmSetWindowAttribute(wintypes.HWND(hwnd), wintypes.DWORD(35), ctypes.byref(bg), ctypes.sizeof(bg))
+            dwmapi.DwmSetWindowAttribute(wintypes.HWND(hwnd), wintypes.DWORD(36), ctypes.byref(fg), ctypes.sizeof(fg))
+
+        # Force non-client frame refresh
+        SWP_NOMOVE = 0x0002
+        SWP_NOSIZE = 0x0001
+        SWP_NOZORDER = 0x0004
+        SWP_NOACTIVATE = 0x0010
+        SWP_FRAMECHANGED = 0x0020
+
+        user32.SetWindowPos(
+            wintypes.HWND(hwnd), None, 0, 0, 0, 0,
+            SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED
+        )
+
+        RDW_INVALIDATE = 0x0001
+        RDW_UPDATENOW = 0x0100
+        RDW_FRAME = 0x0400
+        user32.RedrawWindow(wintypes.HWND(hwnd), None, None, RDW_INVALIDATE | RDW_UPDATENOW | RDW_FRAME)
+
+        # Win10 workaround: force NC activation refresh
+        WM_NCACTIVATE = 0x0086
+        user32.SendMessageW(wintypes.HWND(hwnd), WM_NCACTIVATE, wintypes.WPARAM(0), wintypes.LPARAM(0))
+        user32.SendMessageW(wintypes.HWND(hwnd), WM_NCACTIVATE, wintypes.WPARAM(1), wintypes.LPARAM(0))
+
+    except Exception:
+        pass
+
+class DarkTitleBarFilter(QObject):
+    def __init__(self):
+        super().__init__()
+        self._applied_hwnds = set()
+
+    def _apply_once(self, w):
+        try:
+            hwnd = int(w.winId())
+        except Exception:
+            return
+
+        if hwnd in self._applied_hwnds:
+            return
+
+        self._applied_hwnds.add(hwnd)
+
+        try:
+            enable_dark_title_bar(w)
+        except Exception:
+            pass
+
+    def eventFilter(self, obj, event):
+        if not isinstance(obj, QWidget):
+            return False
+
+        if not obj.isWindow():
+            return False
+
+        et = event.type()
+
+        if et == QEvent.Type.Show:
+            if isinstance(obj, QMainWindow):
+                self._apply_once(obj)
+            elif isinstance(obj, QDialog):
+                QTimer.singleShot(0, lambda w=obj: self._apply_once(w))
+
+        elif et == QEvent.Type.WindowActivate:
+            if isinstance(obj, QDialog):
+                QTimer.singleShot(0, lambda w=obj: self._apply_once(w))
+
+        return False
 
 class GarbageCollector(QObject):
     '''
@@ -510,6 +620,11 @@ class QtRunner(QObject):
             QApplication.setAttribute(Qt.ApplicationAttribute.AA_DontShowIconsInMenus, True)
 
         self._mainapp = QApplication(sys.argv)
+
+        if THEME.enabled and sys.platform == 'win32':
+            app = QApplication.instance()
+            self._dark_titlebar_filter = DarkTitleBarFilter()
+            app.installEventFilter(self._dark_titlebar_filter)
 
         self._exccatcher = ExceptionCatcher(ui, self._mainapp, self)
         self._gc = GarbageCollector(ui, self)
