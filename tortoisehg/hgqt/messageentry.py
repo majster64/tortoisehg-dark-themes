@@ -1,6 +1,7 @@
 # messageentry.py - TortoiseHg's commit message editng widget
 #
 # Copyright 2011 Steve Borho <steve@borho.org>
+# Copyright (C) 2026 Peter Demcak <majster64@gmail.com> (dark theme)
 #
 # This software may be used and distributed according to the terms of the
 # GNU General Public License version 2 or any later version.
@@ -37,6 +38,11 @@ from . import (
     qtlib,
 )
 
+from tortoisehg.hgqt import qsci
+Qsci = qsci.QsciScintilla
+
+from tortoisehg.hgqt.theme import THEME
+
 class MessageEntry(qscilib.Scintilla):
 
     def __init__(self, parent, getCheckedFunc=None):
@@ -67,6 +73,38 @@ class MessageEntry(qscilib.Scintilla):
         self.applylexer()
 
         self._re_boundary = re.compile(r'[0-9i#]+\.|\(?[0-9i#]+\)|\(@\)')
+
+        if THEME.enabled:
+            # Base editor colors
+            self.setPaper(THEME.background)
+            self.setColor(THEME.text)
+
+            # Force STYLE_DEFAULT
+            self.SendScintilla(Qsci.SCI_STYLESETBACK, Qsci.STYLE_DEFAULT, THEME.background)
+            self.SendScintilla(Qsci.SCI_STYLESETFORE, Qsci.STYLE_DEFAULT, THEME.text)
+            self.SendScintilla(Qsci.SCI_STYLECLEARALL)
+
+            # Braces
+            self.setBraceMatching(Qsci.BraceMatch.SloppyBraceMatch)
+
+            # Bad brace
+            self.SendScintilla(Qsci.SCI_STYLESETBACK, Qsci.STYLE_BRACEBAD, THEME.brace_bad_bg)
+            self.SendScintilla(Qsci.SCI_STYLESETFORE, Qsci.STYLE_BRACEBAD, THEME.brace_bad_fg)
+
+            # Matched braces
+            self.SendScintilla(Qsci.SCI_STYLESETBACK, Qsci.STYLE_BRACELIGHT, THEME.brace_match_bg)
+            self.SendScintilla(Qsci.SCI_STYLESETFORE, Qsci.STYLE_BRACELIGHT, THEME.brace_match_fg)
+
+            # Selection
+            self.setSelectionBackgroundColor(THEME.selection_background)
+            self.setSelectionForegroundColor(THEME.selection_text)
+
+            # Cursor
+            self.setCaretForegroundColor(THEME.control_text)
+
+            # Caret
+            self.setCaretForegroundColor(THEME.control_text)
+            self.setCaretLineBackgroundColor(THEME.backgroundLighter)
 
     def setText(self, text):
         result = super().setText(text)
