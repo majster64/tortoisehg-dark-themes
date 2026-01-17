@@ -2,6 +2,7 @@
 #
 # Copyright (C) 2007-2010 Logilab. All rights reserved.
 # Copyright (C) 2010 Adrian Buehlmann <adrian@cadifra.com>
+# Copyright (C) 2026 Peter Demcak <majster64@gmail.com> (dark theme)
 #
 # This software may be used and distributed according to the terms of the
 # GNU General Public License version 2 or any later version.
@@ -130,6 +131,8 @@ if typing.TYPE_CHECKING:
         Union,
     )
 
+from tortoisehg.hgqt.qtgui import QApplication, QPalette, QColor
+from .theme import THEME
 
 _SELECTION_SINGLE = 'single'
 _SELECTION_PAIR = 'pair'
@@ -254,6 +257,25 @@ class RepoWidget(QWidget):
         # listen to change notification after initial settings are loaded
         repoagent.repositoryChanged.connect(self.repositoryChanged)
         repoagent.configChanged.connect(self.configChanged)
+        
+        if THEME.enabled:
+            repo = self._repoagent.rawRepo()
+            qtlib.configstyles(repo.ui)
+
+            app = QApplication.instance()
+            if app is not None:
+                pal = app.palette()
+
+                pal.setColor(QPalette.ColorRole.Text, THEME.control_text)
+                pal.setColor(QPalette.ColorRole.WindowText, THEME.control_text)
+
+                pal.setColor(QPalette.ColorRole.Highlight, THEME.selection_background)
+                pal.setColor(QPalette.ColorRole.HighlightedText, THEME.selection_text)
+
+                pal.setColor(QPalette.ColorRole.Link, THEME.ui_info)
+
+                app.setPalette(pal)
+
 
         self._updateNamedActions()
         QTimer.singleShot(0, self._initView)
