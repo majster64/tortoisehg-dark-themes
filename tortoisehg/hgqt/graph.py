@@ -2,6 +2,7 @@
 #
 # Copyright (c) 2003-2010 LOGILAB S.A. (Paris, FRANCE).
 # http://www.logilab.fr/ -- mailto:contact@logilab.fr
+# Copyright (C) 2026 Peter Demcak <majster64@gmail.com> (dark theme)
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
@@ -47,6 +48,8 @@ from mercurial.utils import (
 from ..util import (
     obsoleteutil,
 )
+
+from tortoisehg.hgqt.theme import THEME
 
 r"""
 How each edge color is determined
@@ -255,7 +258,8 @@ NODE_SHAPE_REVISION_DRAFT = 4
 NODE_SHAPE_REVISION_SECRET = 5
 
 # TODO: Remove these two when we adopt GTK author color scheme
-COLORS = [
+# Default (light theme) branch / graph colors
+LIGHT_COLORS = [
     '#0000ff',  # blue
     '#006400',  # dark green
     '#008000',  # green
@@ -268,6 +272,22 @@ COLORS = [
     '#008b8b',  # dark cyan
 ]
 
+# Dark-theme branch / graph colors
+DARK_COLORS = [
+    '#3a5dc4',  # dark blue
+    '#14532d',  # dark green
+    '#166534',  # green (darkened)
+    '#1e3a8a',  # dark blue
+    '#4c1d95',  # purple
+    '#1e40af',  # dodger blue (dark)
+    '#5f5a1a',  # dark yellow / olive
+    '#86198f',  # magenta (dark)
+    '#5b1366',  # dark magenta
+    '#155e75',  # dark cyan
+]
+
+# Public API (used elsewhere)
+COLORS = DARK_COLORS if THEME.enabled else LIGHT_COLORS
 
 def hashcolor(data, modulo=None):
     """function to reliably map a string to a color index
