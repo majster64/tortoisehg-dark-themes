@@ -1,6 +1,7 @@
 # Copyright (c) 2009-2010 LOGILAB S.A. (Paris, FRANCE).
 # http://www.logilab.fr/ -- mailto:contact@logilab.fr
 # Copyright 2010 Steve Borho <steve@borho.org>
+# Copyright (C) 2026 Peter Demcak <majster64@gmail.com> (dark theme)
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
@@ -51,6 +52,7 @@ from .qtgui import (
     QMouseEvent,
     QPainter,
     QPainterPath,
+    QPalette,
     QPen,
     QPolygonF,
     QProxyStyle,
@@ -73,6 +75,8 @@ from . import (
     qtlib,
     repomodel,
 )
+
+from .theme import THEME
 
 class HgRepoView(QTableView):
 
@@ -123,8 +127,15 @@ class HgRepoView(QTableView):
         # do not pass self.style() to HgRepoViewStyle() because it would steal
         # the ownership from QApplication and cause SEGV after the deletion of
         # this widget.
-        self.setStyle(HgRepoViewStyle())
         self._paletteswitcher = qtlib.PaletteSwitcher(self)
+
+        if THEME.enabled:
+            # Use custom repo view style only in light theme
+            pal = self.palette()
+            is_dark = pal.color(QPalette.ColorRole.Window).value() < 128
+
+            if not is_dark:
+                self.setStyle(HgRepoViewStyle())
 
         self.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
         self.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
