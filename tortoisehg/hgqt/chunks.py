@@ -1,6 +1,7 @@
 # chunks.py - TortoiseHg patch/diff browser and editor
 #
 # Copyright 2010 Steve Borho <steve@borho.org>
+# Copyright (C) 2026 Peter Demcak <majster64@gmail.com> (dark theme)
 #
 # This software may be used and distributed according to the terms of the
 # GNU General Public License version 2 or any later version.
@@ -60,6 +61,9 @@ from . import (
     revert,
     visdiff,
 )
+
+from .theme import THEME
+from PyQt5.QtGui import QPixmap, QPainter, QColor, QPen
 
 # TODO
 # Add support for tools like TortoiseMerge that help resolve rejected chunks
@@ -619,6 +623,12 @@ class DiffBrowser(QFrame):
         self.sci.setMarginLineNumbers(1, False)
         self.sci.setMarginWidth(1, QFontMetrics(self.font()).horizontalAdvance('XX'))
         self.sci.setMarginSensitivity(1, True)
+
+        if THEME.enabled:
+            # Dark theme colors for margin (line number / markers area)
+            self.sci.setMarginsBackgroundColor(THEME.backgroundLighter)
+            self.sci.setMarginsForegroundColor(THEME.control_text)
+            
         self.sci.marginClicked.connect(self.marginClicked)
 
         self._checkedpix = qtlib.getcheckboxpixmap(QStyle.StateFlag.State_On,
@@ -627,12 +637,22 @@ class DiffBrowser(QFrame):
 
         self._uncheckedpix = qtlib.getcheckboxpixmap(QStyle.StateFlag.State_Off,
                                                      Qt.GlobalColor.gray, self)
+            
+        if THEME.enabled:
+            # Fix rendering of rectangle for checkbox
+            self._patch_checkbox_pixmap(self._checkedpix)
+            self._patch_checkbox_pixmap(self._uncheckedpix)
+   
         self.unselected = self.sci.markerDefine(self._uncheckedpix, -1)
 
         self.vertical = self.sci.markerDefine(qsci.MarkerSymbol.VerticalLine, -1)
+        
+        if THEME.enabled:
+            self.sci.setMarkerBackgroundColor(THEME.chunks_vertical_line, self.vertical)
+
         self.divider = self.sci.markerDefine(qsci.MarkerSymbol.Background, -1)
         self.selcolor = self.sci.markerDefine(qsci.MarkerSymbol.Background, -1)
-        self.sci.setMarkerBackgroundColor(QColor('#BBFFFF'), self.selcolor)
+        self.sci.setMarkerBackgroundColor(QColor('#BBFFFF'), self.selcolor) # Initial colors (will be overridden by setLexer)
         self.sci.setMarkerBackgroundColor(QColor('#AAAAAA'), self.divider)
         mask = (1 << self.selected) | (1 << self.unselected) | \
                (1 << self.vertical) | (1 << self.selcolor) | (1 << self.divider)
@@ -653,6 +673,16 @@ class DiffBrowser(QFrame):
         self.layout().addWidget(self.searchbar)
 
         self.clearDisplay()
+
+    def _patch_checkbox_pixmap(self, pm):
+        painter = QPainter(pm)
+        painter.setRenderHint(QPainter.Antialiasing, False)
+
+        painter.setPen(QPen(THEME.diff_text))
+        painter.drawRect(2, 0, pm.width() - 1 - 4, pm.height() - 1)
+
+        painter.end()
+
 
     def loadSettings(self, qs, prefix):
         self.sci.loadSettings(qs, prefix)
@@ -815,6 +845,16 @@ class DiffBrowser(QFrame):
             if (c.fromline, len(c.before)) in reenable:
                 self.toggleChunk(c)
         self.updateSummary()
+
+        if THEME.enabled:
+            # Reapply dark theme colors because setLexer() resets marker colors to white
+
+            # Divider between margin and editor text
+            self.sci.setMarkerBackgroundColor(THEME.backgroundLighter, self.divider)
+
+            # Selected chunk background
+            self.sci.setMarkerBackgroundColor(THEME.diff_excluded, self.selcolor)
+
 
     @pyqtSlot(str, bool, bool, bool)
     def find(self, exp, icase=True, wrap=False, forward=True):
