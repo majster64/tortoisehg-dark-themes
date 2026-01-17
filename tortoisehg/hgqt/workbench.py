@@ -176,6 +176,33 @@ def build_dark_stylesheet(THEME):
         color: {c.text_selection.name()};
     }}
 
+    /* === ScrollBars === */
+    QScrollBar {{
+        background: {THEME.control_background.name()};
+        border: 1px solid {THEME.control_border.name()};
+    }}
+
+    QScrollBar::handle {{
+        background: {THEME.backgroundLighter.name()};
+        border: 1px solid {THEME.control_border.name()};
+    }}
+
+    QScrollBar::handle:hover {{
+        background: {THEME.control_hover.name()};
+    }}
+
+    QScrollBar::handle:pressed {{
+        background: {THEME.control_pressed.name()};
+    }}
+
+    QScrollBar::add-line,
+    QScrollBar::sub-line {{
+        background: none;
+        border: none;
+    }}
+
+
+
     /* === Header views === */
     QHeaderView {{
         background-color: {c.background.name()};
