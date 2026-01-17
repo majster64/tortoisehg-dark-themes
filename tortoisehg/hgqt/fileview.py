@@ -1,6 +1,7 @@
 # fileview.py - File diff, content, and annotation display widget
 #
 # Copyright 2010 Steve Borho <steve@borho.org>
+# Copyright (C) 2026 Peter Demcak <majster64@gmail.com> (dark theme)
 #
 # This software may be used and distributed according to the terms of the
 # GNU General Public License version 2 or any later version.
@@ -77,6 +78,9 @@ if typing.TYPE_CHECKING:
     from typing import (
         Optional,
     )
+
+from .theme import THEME
+from PyQt5.QtGui import QPixmap, QPainter, QColor, QPen
 
 qsci = qscilib.Scintilla
 
@@ -162,6 +166,22 @@ class HgFileView(QFrame):
         self.blk = blockmatcher.BlockList(self)
         self.blksearch = blockmatcher.BlockList(self)
         self.sci = qscilib.Scintilla(self)
+
+        if THEME.enabled:
+            self.sci.setPaper(THEME.background)
+            self.sci.setColor(THEME.text)
+
+            self.sci.setSelectionBackgroundColor(THEME.text_selection)
+            self.sci.setSelectionForegroundColor(THEME.text)
+
+            self.sci.setCaretForegroundColor(THEME.caret_foreground)
+
+            self.sci.setMarginsBackgroundColor(THEME.backgroundLighter)
+            self.sci.setMarginsForegroundColor(THEME.text_margin)
+
+            self.sci.setWhitespaceBackgroundColor(THEME.background)
+            self.sci.setWhitespaceForegroundColor(THEME.text_margin)
+
         hbox.addWidget(self.blk)
         hbox.addWidget(self.sci, 1)
         hbox.addWidget(self.blksearch)
@@ -297,6 +317,10 @@ class HgFileView(QFrame):
         repoagent.configChanged.connect(self._applyRepoConfig)
         self._applyRepoConfig()
 
+    def _resetMargins(self):
+        for m in (_LineNumberMargin, _AnnotateMargin, _ChunkSelectionMargin):
+            self.sci.setMarginWidth(m, 0)
+
     @property
     def repo(self):
         return self._repoagent.rawRepo()
@@ -378,6 +402,10 @@ class HgFileView(QFrame):
         for c in reversed(self._activeViewControls):
             if c not in newcontrols:
                 c.close()
+
+        if THEME.enabled:
+            self._resetMargins()
+
         for c in newcontrols:
             if c not in self._activeViewControls:
                 c.open()
@@ -728,6 +756,50 @@ class _AbstractViewControl(QObject):
         assert p is None or isinstance(p, QWidget)
         return p
 
+    def _forceDarkViewport(self):
+        sci = self._sci
+
+        # Kill edge column
+        sci.setEdgeMode(qsci.EdgeNone)
+        sci.setEdgeColumn(0)
+
+        # Force dark viewport background
+        vp = sci.viewport()
+        vp.setAutoFillBackground(True)
+
+        pal = vp.palette()
+        pal.setColor(QPalette.Window, THEME.background)
+        vp.setPalette(pal)
+
+    def _forceDarkViewportLater(self):
+        if not THEME.enabled:
+            return
+    
+        self._sci.setPaper(THEME.background)
+        self._sci.setMarginsBackgroundColor(THEME.backgroundLighter)
+        self._sci.setMarginsForegroundColor(THEME.text_margin)
+
+        QTimer.singleShot(0, self._applyDarkFixes)
+
+
+    def _applyDarkFixes(self):
+        if not THEME.enabled:
+            return
+        
+        sci = self._sci
+
+        # viewport background
+        vp = sci.viewport()
+        vp.setAutoFillBackground(True)
+        pal = vp.palette()
+        pal.setColor(QPalette.Window, THEME.background)
+        vp.setPalette(pal)
+
+        # selection (compatible with old Scintilla)
+        sci.SendScintilla(qsci.SCI_SETSELBACK, 1, THEME.selection_background)
+        sci.SendScintilla(qsci.SCI_SETSELFORE, 1, THEME.selection_text)
+
+        sci.setCaretForegroundColor(THEME.caret_foreground)
 
 _diffHeaderRegExp = re.compile(r"^@@ -[0-9]+,[0-9]+ \+[0-9]+,[0-9]+ @@")
 
@@ -746,13 +818,35 @@ class _DiffViewControl(_AbstractViewControl):
 
     def open(self):
         self._sci.markerDefine(qsci.MarkerSymbol.Background, _ChunkStartMarker)
-        if qtlib.isDarkTheme(self._sci.palette()):
+
+        if THEME.enabled:
+            self._sci.setMarkerBackgroundColor(THEME.backgroundLighter, _ChunkStartMarker)
+        elif qtlib.isDarkTheme(self._sci.palette()):
             self._sci.setMarkerBackgroundColor(QColor('#204820'),
                                                _ChunkStartMarker)
         else:
             self._sci.setMarkerBackgroundColor(QColor('#B0FFA0'),
                                                _ChunkStartMarker)
         self._sci.setLexer(lexers.difflexer(self))
+
+        if THEME.enabled:
+            self._sci.setMarginType(_ChunkSelectionMargin, qsci.MarginType.SymbolMargin)
+            self._sci.setMarginWidth(_ChunkSelectionMargin, 14)
+            self._sci.setMarginMarkerMask(_ChunkSelectionMargin, _ChunkSelectionMarkerMask)
+            self._sci.setMarginSensitivity(_ChunkSelectionMargin, True)
+
+            # LEXER - controls text colors
+            lexer = lexers.difflexer(self)
+            self._sci.setLexer(lexer)
+
+            self._sci.SendScintilla(qsci.SCI_STYLESETBACK, qsci.STYLE_DEFAULT, THEME.background)
+            self._sci.SendScintilla(qsci.SCI_STYLESETFORE, _ChunkStartMarker, THEME.diff_text) # color of unmodified text
+            self._sci.SendScintilla(qsci.SCI_STYLESETFORE, _ReplacedLineMarker, THEME.diff_start) # @@
+            self._sci.SendScintilla(qsci.SCI_STYLESETFORE, _ExcludedLineMarker, THEME.diff_removed)
+            self._sci.SendScintilla(qsci.SCI_STYLESETFORE, _FirstAnnotateLineMarker, THEME.diff_added) # color of added text
+
+            # CRITICAL - must be called after setLexer to fix white stripe
+            self._forceDarkViewportLater()
 
     def close(self):
         self._sci.markerDefine(qsci.MarkerSymbol.Invisible, _ChunkStartMarker)
@@ -831,6 +925,23 @@ class _FileViewControl(_AbstractViewControl):
         self._blk.setVisible(True)
         self._actionGotoLine.setEnabled(True)
 
+        if THEME.enabled:
+            # to skip white strip
+            self._forceDarkViewportLater()
+
+            # This controls the color of margin text
+            self._sci.SendScintilla(qsci.SCI_STYLESETFORE, qsci.STYLE_LINENUMBER, THEME.text_margin)
+            self._sci.SendScintilla(qsci.SCI_STYLESETBACK, qsci.STYLE_LINENUMBER, THEME.backgroundLighter)
+
+            # dark theme - global, not for margin
+            self._sci.setMarginsBackgroundColor(THEME.backgroundLighter)
+            self._sci.setMarginsForegroundColor(THEME.text_margin)
+
+            # width by number of lines
+            width = len(str(self._sci.lines())) + 2
+            self._sci.setMarginLineNumbers(_LineNumberMargin, True)
+            self._sci.setMarginWidth(_LineNumberMargin, 'M' * width)
+
     def close(self):
         self._blk.setVisible(False)
         self._sci.setMarginWidth(_LineNumberMargin, 0)
@@ -843,6 +954,11 @@ class _FileViewControl(_AbstractViewControl):
             filename = fd.filePath()
             lexer = lexers.getlexer(self._ui, filename, fd.contents, self)
             newFont = qtlib.getfont('fontlog').font()
+
+            if THEME.enabled:
+                if lexer:
+                    lexer.setDefaultPaper(THEME.background)
+                    lexer.setDefaultColor(THEME.text)
 
             self._sci.setFont(newFont)
             self._sci.setLexer(lexer)
@@ -859,6 +975,17 @@ class _FileViewControl(_AbstractViewControl):
             self._startBuildMarker(fd)
         else:
             self._buildtimer.stop()  # in case previous request not finished
+
+        if THEME.enabled:
+            self._forceDarkViewportLater() # fixes ocasional white strip for FileView
+
+    @util.propertycache
+    def _margin_style(self):
+        s = Qsci.QsciStyle(qscilib.STYLE_FILEVIEW_MARGIN)
+        s.setPaper(THEME.backgroundLighter)
+        s.setColor(THEME.text_margin)
+        s.setFont(self._sci.font())
+        return s
 
     def _startBuildMarker(self, fd):
         # use the difflib.SequenceMatcher, which returns a set of opcodes
@@ -1003,6 +1130,8 @@ class _AnnotateViewControl(_AbstractViewControl):
 
     def open(self):
         self._sci.viewport().installEventFilter(self)
+        if THEME.enabled:
+            self._forceDarkViewportLater()
 
     def close(self):
         self._sci.viewport().removeEventFilter(self)
@@ -1162,9 +1291,27 @@ class _AnnotateViewControl(_AbstractViewControl):
                                 s.font().family().encode('utf-8'))
         self._sci.SendScintilla(qsci.SCI_STYLESETSIZE,
                                 s.style(), s.font().pointSize())
-        for i, (fctx, _origline) in enumerate(self._links):
-            self._sci.setMarginText(i, revtexts[fctx.rev()], s)
+                                
+        if THEME.enabled:
+            max_line = len(str(len(self._links)))
 
+            n = len(self._links)
+
+            # fill only real annotate lines
+            for i in range(n):
+                fctx, _origline = self._links[i]
+                lineno = f"{i + 1:>{max_line}}"
+                rev = revtexts.get(fctx.rev(), "")
+                self._sci.setMarginText(i, f"{lineno}  {rev}", s)
+
+            # clear any extra Scintilla lines (usually the last blank line)
+            for i in range(n, self._sci.lines()):
+                self._sci.setMarginText(i, "", s)
+            
+        else:
+            for i, (fctx, _origline) in enumerate(self._links):
+                    self._sci.setMarginText(i, revtexts[fctx.rev()], s)
+        
     def _updatemarkers(self):
         """Update markers which colorizes each line"""
         self._redefinemarkers()
@@ -1199,7 +1346,12 @@ class _AnnotateViewControl(_AbstractViewControl):
     def _margin_style(self):
         """Style for margin area"""
         s = Qsci.QsciStyle(qscilib.STYLE_FILEVIEW_MARGIN)
-        s.setPaper(QApplication.palette().color(QPalette.ColorRole.Window))
+        
+        if THEME.enabled:
+            s.setPaper(THEME.backgroundLighter)
+        else:
+            s.setPaper(QApplication.palette().color(QPalette.ColorRole.Window))
+        
         s.setFont(self._sci.font())
         return s
 
@@ -1320,8 +1472,20 @@ class _ChunkSelectionViewControl(_AbstractViewControl):
         p = qtlib.getcheckboxpixmap(QStyle.StateFlag.State_Off, QColor('#B0FFA0'), sci)
         self._sci.markerDefine(p, _ExcludedChunkStartMarker)
 
+        if THEME.enabled:
+            # Fix rendering of checkboxes
+            p = qtlib.getcheckboxpixmap(QStyle.StateFlag.State_On, THEME.background, sci)
+            self._patch_checkbox_pixmap(p)
+            self._sci.markerDefine(p, _IncludedChunkStartMarker)
+
+            p = qtlib.getcheckboxpixmap(QStyle.StateFlag.State_Off, THEME.background, sci)
+            self._patch_checkbox_pixmap(p)
+            self._sci.markerDefine(p, _ExcludedChunkStartMarker)
+
         self._sci.markerDefine(qsci.MarkerSymbol.Background, _ExcludedLineMarker)
-        if qtlib.isDarkTheme(self._sci.palette()):
+        if THEME.enabled:
+            bg, fg = THEME.diff_excluded, THEME.diff_text
+        elif qtlib.isDarkTheme(self._sci.palette()):
             bg, fg = QColor(44, 44, 44), QColor(86, 86, 86)
         else:
             bg, fg = QColor('lightgrey'), QColor('darkgrey')
@@ -1351,8 +1515,21 @@ class _ChunkSelectionViewControl(_AbstractViewControl):
         self._fd = fd
         self._chunkatline = {}
 
+    def _patch_checkbox_pixmap(self, pm):
+        painter = QPainter(pm)
+        painter.setRenderHint(QPainter.Antialiasing, False)
+
+        painter.setPen(QPen(THEME.diff_text))
+        painter.drawRect(1, 0, pm.width() - 1 - 2, pm.height() - 1)
+
+        painter.end()
+
     def open(self):
         self._sci.setMarginWidth(_ChunkSelectionMargin, 15)
+
+        if THEME.enabled:
+            self._sci.setMarginWidth(_ChunkSelectionMargin, 14) # Fix artifact on 0-th pixel
+
         self._toggleshortcut.setEnabled(True)
 
     def close(self):
