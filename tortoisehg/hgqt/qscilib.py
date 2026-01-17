@@ -2,6 +2,7 @@
 #
 # Copyright 2010 Steve Borho <steve@borho.org>
 # Copyright 2010 Yuya Nishihara <yuya@tcha.org>
+# Copyright (C) 2026 Peter Demcak <majster64@gmail.com> (dark theme)
 #
 # This software may be used and distributed according to the terms of the
 # GNU General Public License version 2 or any later version.
@@ -48,6 +49,8 @@ from .qtgui import (
 from ..util import hglib
 from ..util.i18n import _
 from . import qtlib
+from .theme import THEME
+from PyQt5.QtGui import QColor
 
 # indicator for highlighting preedit text of input method
 _IM_PREEDIT_INDIC_ID = QsciScintilla.INDIC_MAX
@@ -840,6 +843,50 @@ def fileEditor(filename, **opts):
     if opts.get('foldable'):
         editor.setFolding(QsciScintilla.FoldStyle.BoxedTreeFoldStyle)
     dialog.layout().addWidget(editor)
+
+    if THEME.enabled:
+
+        # Text (editor content)
+        editor.SendScintilla(QsciScintilla.SCI_STYLESETBACK, QsciScintilla.STYLE_DEFAULT, THEME.background)
+        editor.SendScintilla(QsciScintilla.SCI_STYLESETFORE, QsciScintilla.STYLE_DEFAULT, THEME.diff_text)
+
+        # Margins (line numbers, symbol margins)
+        editor.setMarginsBackgroundColor(THEME.background)
+        editor.setMarginsForegroundColor(THEME.diff_text)
+
+        # Folding marker symbols (PlainFoldStyle)
+        editor.setMarkerBackgroundColor(THEME.background, QsciScintilla.SC_MARKNUM_FOLDER)
+        editor.setMarkerForegroundColor(THEME.diff_text, QsciScintilla.SC_MARKNUM_FOLDER)
+
+        editor.setMarkerBackgroundColor(THEME.background, QsciScintilla.SC_MARKNUM_FOLDEROPEN)
+        editor.setMarkerForegroundColor(THEME.diff_text, QsciScintilla.SC_MARKNUM_FOLDEROPEN)
+
+        # Lexer styles (apply dark background to all, then override sections)
+        for style in range(128):
+            lexer.setPaper(THEME.background, style)
+            lexer.setColor(THEME.diff_text, style)
+
+        lexer.setColor(QColor(197, 134, 192), QsciLexerProperties.Section)
+
+        # Folding margin (visual container)
+        editor.setMarginType(2, QsciScintilla.MarginType.SymbolMargin)
+        editor.setMarginWidth(2, 12)
+        editor.setMarginBackgroundColor(2, THEME.background)
+        editor.setFoldMarginColors(THEME.background, THEME.config_scrollbar)
+
+        # Caret (cursor)
+        editor.setCaretForegroundColor(THEME.caret_foreground)
+
+        # Caret line (current line highlight)
+        editor.setCaretLineVisible(True)
+        editor.setCaretLineBackgroundColor(THEME.backgroundLighter)
+
+        # Selection
+        editor.setSelectionBackgroundColor(THEME.text_selection)
+        editor.setSelectionForegroundColor(THEME.diff_text)
+
+        # Folding style (avoid white checkboxes)
+        editor.setFolding(QsciScintilla.FoldStyle.PlainFoldStyle)
 
     searchbar = SearchToolBar(dialog)
     searchbar.searchRequested.connect(editor.find)
