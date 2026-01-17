@@ -1,6 +1,7 @@
 # docklog.py - Log dock widget for the TortoiseHg Workbench
 #
 # Copyright 2010 Steve Borho <steve@borho.org>
+# Copyright (C) 2026 Peter Demcak <majster64@gmail.com> (dark theme)
 #
 # This software may be used and distributed according to the terms of the
 # GNU General Public License version 2 or any later version.
@@ -45,6 +46,8 @@ from . import (
     qtlib,
 )
 
+from .theme import THEME
+
 class _LogWidgetForConsole(cmdui.LogWidget):
     """Wrapped LogWidget for ConsoleWidget"""
 
@@ -57,8 +60,52 @@ class _LogWidgetForConsole(cmdui.LogWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self._prompt_marker = self.markerDefine(QsciScintilla.MarkerSymbol.Background)
-        self.setMarkerBackgroundColor(QColor('#e8f3fe'), self._prompt_marker)
+
+        if THEME.enabled:
+            # Override light 'control' marker from cmdui.LogWidget
+            if hasattr(self, '_markers') and 'control' in self._markers:
+                self.setMarkerBackgroundColor(THEME.background, self._markers['control'])
+            # Make sure the existing 'control' marker used by _setmarker(..., 'control')
+            # has dark background.
+            m = None
+            for attr in ('_markers', '_markerids', '_markermap'):
+                d = getattr(self, attr, None)
+                if isinstance(d, dict) and 'control' in d:
+                    m = d['control']
+                    break
+            if m is not None:
+                self.setMarkerBackgroundColor(THEME.background, m)
+
+            control_marker = self.markerDefine(QsciScintilla.MarkerSymbol.Background)
+            self.setMarkerBackgroundColor(THEME.background, control_marker)
+
+            # LogWidget-specific styles (used by appendLog labels)
+            for style in (
+                        QsciScintilla.STYLE_LINENUMBER,
+                        QsciScintilla.STYLE_BRACELIGHT,
+                        QsciScintilla.STYLE_BRACEBAD,
+                        QsciScintilla.STYLE_CONTROLCHAR,
+                        QsciScintilla.STYLE_INDENTGUIDE,
+                ):
+                self.SendScintilla(QsciScintilla.SCI_STYLESETBACK, style, THEME.background)
+                self.SendScintilla(QsciScintilla.SCI_STYLESETFORE, style, THEME.text)
+
+            # Basic widget colors
+            self.setPaper(THEME.background)
+            self.setColor(THEME.text)
+            self.setSelectionBackgroundColor(THEME.text_selection)
+            self.setSelectionForegroundColor(THEME.text)
+            self.setCaretForegroundColor(THEME.caret_foreground)
+
+            # Prompt line marker background (was light blue)
+            # We'll set it after marker is created (see below)
+            self._prompt_marker = self.markerDefine(QsciScintilla.MarkerSymbol.Background)
+            self.setMarkerBackgroundColor(THEME.backgroundLighter, self._prompt_marker)
+        else:
+            self._prompt_marker = self.markerDefine(QsciScintilla.MarkerSymbol.Background)
+            self.setMarkerBackgroundColor(QColor('#e8f3fe'), self._prompt_marker)
+                
+        
         self.cursorPositionChanged.connect(self._updatePrompt)
         # ensure not moving prompt line even if completion list get shorter,
         # by allowing to scroll one page below the last line
