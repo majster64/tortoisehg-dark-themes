@@ -1,5 +1,6 @@
 # Copyright (c) 2009-2010 LOGILAB S.A. (Paris, FRANCE).
 # http://www.logilab.fr/ -- mailto:contact@logilab.fr
+# Copyright (C) 2026 Peter Demcak <majster64@gmail.com> (dark theme)
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
@@ -47,6 +48,40 @@ if typing.TYPE_CHECKING:
         QWidget,
     )
 
+from PyQt5.QtWidgets import QStyledItemDelegate, QStyleOptionViewItem, QStyle
+from PyQt5.QtGui import QBrush
+from PyQt5.QtWidgets import QMessageBox
+from .theme import THEME
+
+class PreserveStatusColorDelegate(QStyledItemDelegate):
+    def paint(self, painter, option, index):
+        opt = QStyleOptionViewItem(option)
+        self.initStyleOption(opt, index)
+
+        if opt.state & QStyle.State_Selected:
+            # preserve per-item foreground color
+            fg = index.data(Qt.ForegroundRole)
+            if isinstance(fg, QBrush):
+                brush = fg
+            elif fg is not None:
+                brush = QBrush(fg)
+            else:
+                brush = opt.palette.brush(opt.palette.Text)
+
+            # critical for keyboard selection
+            opt.palette.setBrush(opt.palette.HighlightedText, brush)
+            opt.palette.setBrush(opt.palette.Text, brush)
+
+            painter.save()
+            painter.setPen(Qt.yellow)
+            painter.drawText(
+                option.rect.adjusted(4, 0, 0, 0),
+                Qt.AlignLeft | Qt.AlignVCenter,
+                "DELEGATE"
+            )
+            painter.restore()
+
+        super().paint(painter, opt, index)
 
 class HgFileListView(QTreeView):
     """Display files and statuses between two revisions or patch"""
@@ -65,6 +100,9 @@ class HgFileListView(QTreeView):
         # give consistent height and enable optimization
         self.setIconSize(qtlib.smallIconSize())
         self.setUniformRowHeights(True)
+
+        if THEME.enabled:
+            self.setItemDelegate(PreserveStatusColorDelegate(self))
 
     def _model(self) -> manifestmodel.ManifestModel:
         model = self.model()
