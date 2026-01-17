@@ -1,6 +1,7 @@
 # status.py - working copy browser
 #
 # Copyright 2010 Steve Borho <steve@borho.org>
+# Copyright (C) 2026 Peter Demcak <majster64@gmail.com> (dark theme)
 #
 # This software may be used and distributed according to the terms of the
 # GNU General Public License version 2 or any later version.
@@ -74,6 +75,12 @@ from . import (
 from typing import (
     Dict,
 )
+
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPalette, QBrush
+from PyQt5.QtWidgets import QStyledItemDelegate, QStyle, QStyleOptionViewItem
+from PyQt5.QtCore import QTimer
+from .theme import THEME
 
 # This widget can be used as the basis of the commit tool or any other
 # working copy browser.
@@ -199,6 +206,10 @@ class StatusWidget(QWidget):
             self.runCustomCommandRequested)
         self.addActions(self._fileactions.actions())
         tv = WctxFileTree(self)
+        
+        if THEME.enabled:
+            tv.setItemDelegate(WctxPreserveStatusColorDelegate(tv))
+            
         vbox.addLayout(hbox)
         vbox.addWidget(tv)
         split.addWidget(frame)
@@ -776,6 +787,25 @@ class StatusThread(QThread):
         except error.Abort as e:
             self.showMessage.emit(hglib.exception_str(e, show_hint=True))
 
+class WctxPreserveStatusColorDelegate(QStyledItemDelegate):
+    def paint(self, painter, option, index):
+        opt = QStyleOptionViewItem(option)
+        self.initStyleOption(opt, index)
+
+        if opt.state & QStyle.State_Selected:
+            fg = index.data(Qt.ForegroundRole)
+            if isinstance(fg, QBrush):
+                brush = fg
+            elif fg is not None:
+                brush = QBrush(fg)
+            else:
+                brush = opt.palette.brush(QPalette.Text)
+
+            # critical: keyboard selection path uses HighlightedText
+            opt.palette.setBrush(QPalette.HighlightedText, brush)
+            opt.palette.setBrush(QPalette.Text, brush)
+
+        super().paint(painter, opt, index)
 
 class WctxFileTree(QTreeView):
 
@@ -785,6 +815,28 @@ class WctxFileTree(QTreeView):
         super().scrollTo(index, hint)
         self.horizontalScrollBar().setValue(orighoriz)
 
+    
+    def drawRow(self, painter, option, index):
+        if option.state & QStyle.State_Selected:
+            opt = QStyleOptionViewItem(option)
+
+            # get per-item foreground color (status color)
+            fg = index.data(Qt.ForegroundRole)
+            if isinstance(fg, QBrush):
+                brush = fg
+            elif fg is not None:
+                brush = QBrush(fg)
+            else:
+                brush = opt.palette.brush(QPalette.Text)
+
+            # force Qt to use status color even for keyboard selection
+            opt.palette.setBrush(QPalette.HighlightedText, brush)
+            opt.palette.setBrush(QPalette.Text, brush)
+
+            super().drawRow(painter, opt, index)
+            return
+
+        super().drawRow(painter, option, index)
 
 class WctxModel(QAbstractTableModel):
     checkCountChanged = pyqtSignal()
