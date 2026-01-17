@@ -1,6 +1,7 @@
 # lexers.py - select Qsci lexer for a filename and contents
 #
 # Copyright 2010 Steve Borho <steve@borho.org>
+# Copyright (C) 2026 Peter Demcak <majster64@gmail.com> (dark theme)
 #
 # This software may be used and distributed according to the terms of the
 # GNU General Public License version 2 or any later version.
@@ -24,6 +25,8 @@ from . import qtlib
 from ..util import (
     hglib,
 )
+
+from .theme import THEME
 
 if hasattr(QtGui.QColor, 'getHslF'):
     def _fixdarkcolors(lexer):
@@ -228,16 +231,26 @@ class DiffLexerSelector(_ScriptLexerSelector):
     _lexer = Qsci.QsciLexerDiff
     regex = re.compile(br'^@@ [-]\d+,\d+ [+]\d+,\d+ @@$')
     def cfg_lexer(self, lexer):
-        for label, i in (('diff.inserted', Qsci.QsciLexerDiff.LineAdded),
-                         ('diff.deleted', Qsci.QsciLexerDiff.LineRemoved),
-                         ('diff.hunk', Qsci.QsciLexerDiff.Position)):
-            effect = qtlib.geteffect(label)
-            for e in effect.split(';'):
-                if e.startswith('color:'):
-                    lexer.setColor(QtGui.QColor(e[7:]), i)
-                if e.startswith('background-color:'):
-                    lexer.setEolFill(True, i)
-                    lexer.setPaper(QtGui.QColor(e[18:]), i)
+
+        if THEME.enabled:
+            lexer.setColor(THEME.diff_text, Qsci.QsciLexerDiff.Default) # normal / untouched text
+            lexer.setColor(THEME.diff_start, Qsci.QsciLexerDiff.Position) # @@ hunk header
+            lexer.setColor(THEME.diff_added, Qsci.QsciLexerDiff.LineAdded) # + added lines
+            lexer.setColor(THEME.diff_removed, Qsci.QsciLexerDiff.LineRemoved) # - removed lines
+            #lexer.setColor(THEME.diff_start, Qsci.QsciLexerDiff.FileHeader) # --- / +++ file header (optional)
+
+        else:
+            for label, i in (('diff.inserted', Qsci.QsciLexerDiff.LineAdded),
+                            ('diff.deleted', Qsci.QsciLexerDiff.LineRemoved),
+                            ('diff.hunk', Qsci.QsciLexerDiff.Position)):
+                effect = qtlib.geteffect(label)
+                for e in effect.split(';'):
+                    if e.startswith('color:'):
+                        lexer.setColor(QtGui.QColor(e[7:]), i)
+                    if e.startswith('background-color:'):
+                        lexer.setEolFill(True, i)
+                        lexer.setPaper(QtGui.QColor(e[18:]), i)
+
         font = qtlib.getfont('fontdiff').font()
         lexer.setFont(font, -1)
         _fixdarkcolors(lexer)
