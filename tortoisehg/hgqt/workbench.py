@@ -82,6 +82,10 @@ def apply_dark_palette(app):
     pal.setColor(QPalette.Text, THEME.text)
     pal.setColor(QPalette.WindowText, THEME.text)
 
+    pal.setColor(QPalette.Mid, THEME.backgroundLighter)
+    pal.setColor(QPalette.Dark, THEME.background)
+    pal.setColor(QPalette.Light, THEME.backgroundLighter)
+    
     pal.setColor(QPalette.Highlight, THEME.selection_background)
     pal.setColor(QPalette.HighlightedText, THEME.selection_text)
 
