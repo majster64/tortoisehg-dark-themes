@@ -572,7 +572,7 @@ class HgRepoListModel(QAbstractTableModel):
 
                 # Description column
                 if col == DescColumn:
-                    return THEME.text
+                    return THEME.text_description
 
                 # Revision number / node
                 if col in (NodeColumn, GitNodeColumn):
