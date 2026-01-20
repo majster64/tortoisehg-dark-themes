@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import os
 import re
+import sys
 
 from . import qsci as Qsci
 from .qtcore import (
@@ -641,7 +642,9 @@ class DiffBrowser(QFrame):
         if THEME.enabled:
             # Fix rendering of rectangle for checkbox
             self._patch_checkbox_pixmap(self._checkedpix)
-            self._patch_checkbox_pixmap(self._uncheckedpix)
+            
+            if not  sys.platform.startswith('linux'):
+                self._patch_checkbox_pixmap(self._uncheckedpix)
    
         self.unselected = self.sci.markerDefine(self._uncheckedpix, -1)
 
