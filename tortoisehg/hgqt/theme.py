@@ -59,6 +59,8 @@ BUILTIN_THEMES = {
             'diff_added': QColor('#58B62D'),
             'diff_removed': QColor('#C23A28'),
             'diff_excluded': QColor('#2C2C2C'),
+            'diff_added_bg': QColor("#132213"),
+            'diff_added2_bg': QColor("#151529"),
             'file_modified': QColor('#9B2991'),
             'file_added': QColor('#58B62D'),
             'file_removed': QColor('#C23A28'),

@@ -12,6 +12,7 @@ import difflib
 import os
 import re
 import typing
+import sys
 
 from typing import (
     cast,
@@ -899,7 +900,10 @@ class _FileViewControl(_AbstractViewControl):
         # define markers for colorize zones of diff
         self._sci.markerDefine(qsci.MarkerSymbol.Background, _InsertedLineMarker)
         self._sci.markerDefine(qsci.MarkerSymbol.Background, _ReplacedLineMarker)
-        if qtlib.isDarkTheme(self._sci.palette()):
+        if THEME.enabled:
+            self._sci.setMarkerBackgroundColor(THEME.diff_added_bg, _InsertedLineMarker)
+            self._sci.setMarkerBackgroundColor(THEME.diff_added2_bg, _ReplacedLineMarker)
+        elif qtlib.isDarkTheme(self._sci.palette()):
             self._sci.setMarkerBackgroundColor(QColor('#204820'),
                                                _InsertedLineMarker)
             self._sci.setMarkerBackgroundColor(QColor('#202050'),

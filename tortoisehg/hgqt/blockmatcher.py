@@ -1,6 +1,7 @@
 # Copyright (c) 2003-2010 LOGILAB S.A. (Paris, FRANCE).
 # http://www.logilab.fr/ -- mailto:contact@logilab.fr
-#
+# Copyright (C) 2026 Peter Demcak <majster64@gmail.com> (dark theme)
+
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
 # Foundation; either version 2 of the License, or (at your option) any later
@@ -38,6 +39,12 @@ from .qtgui import (
 )
 
 from . import qtlib
+from .theme import THEME
+
+def _clampLightness(c: QColor, minL=0.45, maxL=0.75):
+    h, s, l, a = c.getHslF()
+    l = max(minL, min(l, maxL))
+    return QColor.fromHslF(h, s, l, a)
 
 class BlockList(QWidget):
     """
@@ -58,7 +65,14 @@ class BlockList(QWidget):
         self._blocks = set()
         self._minimum = 0
         self._maximum = 100
-        self.blockTypes = {'+': QColor(0xA0, 0xFF, 0xB0, ),#0xa5),
+        if THEME.enabled:
+            self.blockTypes = {'+': _clampLightness(THEME.diff_added_bg.lighter(500)),
+                           '-': _clampLightness(THEME.diff_added2_bg.lighter(500)),
+                           'x': _clampLightness(THEME.diff_added2_bg.lighter(500)),
+                           's': _clampLightness(THEME.diff_added_bg.lighter(500)),
+                           }
+        else:
+            self.blockTypes = {'+': QColor(0xA0, 0xFF, 0xB0, ),#0xa5),
                            '-': QColor(0xFF, 0xA0, 0xA0, ),#0xa5),
                            'x': QColor(0xA0, 0xA0, 0xFF, ),#0xa5),
                            's': QColor(0xFF, 0xA5, 0x00, ),#0xa5),
@@ -180,7 +194,15 @@ class BlockMatch(BlockList):
         self._blocks = set()
         self._minimum = {'left': 0, 'right': 0}
         self._maximum = {'left': 100, 'right': 100}
-        self.blockTypes = {'+': QColor(0xA0, 0xFF, 0xB0, ),#0xa5),
+
+        if THEME.enabled:
+            self.blockTypes = {
+                '+': _clampLightness(THEME.diff_added_bg.lighter(500)),
+                '-': _clampLightness(THEME.diff_added2_bg.lighter(500)),
+                'x': _clampLightness(THEME.diff_added2_bg.lighter(500)),
+            }
+        else:
+            self.blockTypes = {'+': QColor(0xA0, 0xFF, 0xB0, ),#0xa5),
                            '-': QColor(0xFF, 0xA0, 0xA0, ),#0xa5),
                            'x': QColor(0xA0, 0xA0, 0xFF, ),#0xa5),
                            }

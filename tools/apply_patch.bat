@@ -17,6 +17,7 @@ REM -------------------------------------------------
 REM list of modified files (relative to hgqt)
 REM -------------------------------------------------
 set FILES= ^
+blockmatcher.py ^
 chunks.py ^
 cmdui.py ^
 docklog.py ^
