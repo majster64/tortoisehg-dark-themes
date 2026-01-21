@@ -1130,7 +1130,7 @@ class _AnnotateViewControl(_AbstractViewControl):
         self._initAnnotateOptionActions()
         self._loadAnnotateSettings()
 
-        self._isdarktheme = qtlib.isDarkTheme(self._sci.palette())
+        self._isdarktheme = THEME.enabled or qtlib.isDarkTheme(self._sci.palette())
 
     def open(self):
         self._sci.viewport().installEventFilter(self)
@@ -1324,6 +1324,51 @@ class _AnnotateViewControl(_AbstractViewControl):
             if m is not None:
                 self._sci.markerAdd(i, m)
 
+    def _make_simple_annotate_palette(self, filectxs, now, maxcolors, background):
+        """
+        Generate a simple age-based annotate palette.
+
+        Newer revisions are lighter, older are darker.
+        Colors are derived from THEME.background.
+        Returns dict {QColor: [fctxs]} compatible with colormap.makeannotatepalette.
+        """
+        uniq = sorted(set(filectxs), key=lambda fctx: -fctx.date()[0])
+
+        if not uniq:
+            return {}
+
+        maxcolors = max(1, min(maxcolors, len(uniq)))
+
+        newest = uniq[0].date()[0]
+        oldest = uniq[-1].date()[0]
+        span = max(1.0, float(newest - oldest))
+
+        h, s, l, a = background.getHslF()
+
+        buckets = {}
+        for fctx in uniq:
+            age = newest - fctx.date()[0]
+            t = age / span
+            idx = int(t * (maxcolors - 1))
+            buckets.setdefault(idx, []).append(fctx)
+
+        L_MIN = 0.08
+        L_MAX = 0.22
+
+        h0, _, _, a = background.getHslF()
+
+        palette = {}
+        for idx, fctxs in buckets.items():
+            t = idx / max(1, maxcolors - 1)
+            l2 = L_MAX * (1.0 - t) + L_MIN * t
+
+            h = (h0 + t * 300.0) % 360.0 / 360.0
+            color = QColor.fromHslF(h, 0.35, l2, a)
+
+            palette[color.name()] = fctxs
+
+        return palette
+
     def _redefinemarkers(self):
         """Redefine line markers according to the current revs"""
         curdate = self._fd.rawContext().date()[0]
@@ -1334,11 +1379,22 @@ class _AnnotateViewControl(_AbstractViewControl):
         self._revmarkers.clear()
         filectxs = iter(fctx for fctx, _origline in self._links)
         maxcolors = 32 - _FirstAnnotateLineMarker
-        palette = colormap.makeannotatepalette(filectxs, curdate,
+
+        if THEME.enabled:
+            palette = self._make_simple_annotate_palette(
+                filectxs,
+                curdate,
+                maxcolors,
+                THEME.background
+            )
+        else:
+            palette = colormap.makeannotatepalette(filectxs, curdate,
                                                maxcolors=maxcolors, maxhues=8,
                                                maxsaturations=16,
                                                mindate=mindate,
                                                isdarktheme=self._isdarktheme)
+        
+
         for i, (color, fctxs) in enumerate(palette.items()):
             m = _FirstAnnotateLineMarker + i
             self._sci.markerDefine(qsci.MarkerSymbol.Background, m)
