@@ -20,6 +20,7 @@ set FILES= ^
 chunks.py ^
 cmdui.py ^
 docklog.py ^
+filedata.py ^
 filelistview.py ^
 fileview.py ^
 graph.py ^

@@ -1,6 +1,7 @@
 # filedata.py - generate displayable file data
 #
 # Copyright 2011 Steve Borho <steve@borho.org>
+# Copyright (C) 2026 Peter Demcak <majster64@gmail.com> (dark theme)
 #
 # This software may be used and distributed according to the terms of the
 # GNU General Public License version 2 or any later version.
@@ -53,6 +54,7 @@ if typing.TYPE_CHECKING:
         ThgContext,
     )
 
+from .theme import THEME
 
 forcedisplaymsg = _('Display the file anyway')
 
@@ -440,10 +442,16 @@ class FileData(_AbstractFileData):
                 return
             for pctx in ctx.parents():
                 if b'x' in fctx.flags() and b'x' not in pctx.flags(wfile):
-                    self.elabel = _("exec mode has been "
+                    if THEME.enabled:
+                        self.elabel = _("exec mode has been <span style='color:%s'>set</span>") % THEME.ui_info.name()
+                    else:
+                        self.elabel = _("exec mode has been "
                                     "<font color='red'>set</font>")
                 elif b'x' not in fctx.flags() and b'x' in pctx.flags(wfile):
-                    self.elabel = _("exec mode has been "
+                    if THEME.enabled:
+                        self.elabel = _("exec mode has been <span style='color:%s'>unset</span>") % THEME.ui_info.name()
+                    else:
+                        self.elabel = _("exec mode has been "
                                     "<font color='red'>unset</font>")
 
         if status == 'A':
@@ -584,10 +592,16 @@ class PatchFileData(_AbstractFileData):
             return
 
         if flags == b'x':
-            self.elabel = _("exec mode has been "
+            if THEME.enabled:
+                self.elabel = _("exec mode has been <span style='color:%s'>set</span>") % THEME.ui_info.name()
+            else:
+                self.elabel = _("exec mode has been "
                             "<font color='red'>set</font>")
         elif flags == b'-':
-            self.elabel = _("exec mode has been "
+            if THEME.enabled:
+                self.elabel = _("exec mode has been <span style='color:%s'>unset</span>") % THEME.ui_info.name()
+            else:
+                self.elabel = _("exec mode has been "
                             "<font color='red'>unset</font>")
         elif flags == b'l':
             self.flabel += _(' <i>(is a symlink)</i>')
