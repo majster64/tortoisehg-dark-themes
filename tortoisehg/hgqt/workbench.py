@@ -186,9 +186,26 @@ def build_dark_stylesheet(THEME):
         border: 1px solid {THEME.control_border.name()};
     }}
 
+    QScrollBar:vertical {{
+        width: 14px;
+    }}
+
+    QScrollBar:horizontal {{
+        height: 14px;
+    }}
+
     QScrollBar::handle {{
         background: {THEME.backgroundLighter.name()};
         border: 1px solid {THEME.control_border.name()};
+        border-radius: 6px;
+    }}
+
+    QScrollBar::handle:vertical {{
+        min-height: 24px;
+    }}
+
+    QScrollBar::handle:horizontal {{
+        min-width: 24px;
     }}
 
     QScrollBar::handle:hover {{
@@ -204,8 +221,6 @@ def build_dark_stylesheet(THEME):
         background: none;
         border: none;
     }}
-
-
 
     /* === Header views === */
     QHeaderView {{
