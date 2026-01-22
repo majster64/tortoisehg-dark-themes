@@ -1,12 +1,19 @@
-# TortoiseHg Dark Themes (Windows)
+# TortoiseHg Dark Themes
 
 Dark theme support for TortoiseHg 7.0.1, including six built-in dark themes.
 
-The project was developed and tested on **Windows 10**.  
-The only Windows-specific feature is the **dark title bar**, which is applied
-*only on Windows* and safely ignored on other platforms.
+The project was developed and tested on **Windows 10/11** and **Ubuntu 22.04 LTS**.
 
-![Dark](screenshots/1_dark.png)
+On **Windows**, the theme also applies a dark title bar.
+This is the only Windows-specific feature and is safely ignored on other platforms.
+
+![Dark](screenshots/Win11_1_dark.png)
+
+## Linux users
+
+Installation on Linux is documented separately.  
+Please see the **[Linux installation guide](linux/README.md)** for detailed installation instructions and screenshots.
+
 ---
 
 ## Requirements
@@ -56,18 +63,16 @@ The only Windows-specific feature is the **dark title bar**, which is applied
 
 ## Theme Selection
 
-After installation, select a theme in:
-
-File / Settings / Workbench / Theme
-
+After installation, select a theme in: File / Settings / Workbench / Theme.
 An application restart is required after changing the theme.
+
+![Dark VSCode](screenshots/Win10_Settings.png)
 
 ---
 
 ## Custom Themes
 
-Instructions for creating your own themes are available in the
-`custom_themes` directory.
+Instructions for creating your own themes are available in **[Custom themes directory](custom_themes/README.md)**.
 
 ---
 
@@ -80,8 +85,16 @@ See `COPYING.txt` for details.
 
 ## Additional Built-in Dark Themes
 
-![Dark VSCode](screenshots/2_dark_vscode.png)
-![Dark Gruvbox](screenshots/3_dark_gruvbox.png)
-![Dark Dracula](screenshots/4_dark_dracula.png)
-![Dark One Dark](screenshots/5_dark_onedark.png)
-![Dark Nord](screenshots/6_dark_nord.png)
+![Dark VSCode](screenshots/Win11_2_dark_vscode.png)
+![Dark Gruvbox](screenshots/Win11_3_dark_gruvbox.png)
+![Dark Dracula](screenshots/Win11_4_dark_dracula.png)
+![Dark One Dark](screenshots/Win11_5_dark_onedark.png)
+![Dark Nord](screenshots/Win11_6_dark_nord.png)
+
+## Known limitations
+
+On Windows 10, the window title bar remains black and cannot be recolored due to OS limitations.
+---
+
+Screenshot from Windows 10:
+![Dark](screenshots/1_dark.png)
