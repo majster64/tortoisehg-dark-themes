@@ -187,40 +187,60 @@ def build_dark_stylesheet(THEME):
     }}
 
     QScrollBar:vertical {{
-        width: 14px;
+        width: 18px;
     }}
 
     QScrollBar:horizontal {{
-        height: 14px;
+        height: 18px;
     }}
 
+    /* HANDLE */
     QScrollBar::handle {{
         background: {THEME.backgroundLighter.name()};
         border: 1px solid {THEME.control_border.name()};
         border-radius: 6px;
+        margin: 0px; /* critical: avoid dead zones */
     }}
 
     QScrollBar::handle:vertical {{
-        min-height: 24px;
+        min-height: 34px;
     }}
 
     QScrollBar::handle:horizontal {{
-        min-width: 24px;
+        min-width: 34px;
     }}
 
+    /* HOVER */
     QScrollBar::handle:hover {{
         background: {THEME.control_hover.name()};
     }}
 
-    QScrollBar::handle:pressed {{
+    /* PRESSED / DRAGGING */
+    QScrollBar::handle:pressed,
+    QScrollBar::handle:active,
+    QScrollBar::handle:active:pressed,
+    QScrollBar::handle:vertical:pressed,
+    QScrollBar::handle:vertical:active,
+    QScrollBar::handle:horizontal:pressed,
+    QScrollBar::handle:horizontal:active {{
         background: {THEME.control_pressed.name()};
     }}
 
+    /* REMOVE INVISIBLE HIT AREAS */
     QScrollBar::add-line,
     QScrollBar::sub-line {{
         background: none;
         border: none;
+        width: 0px;
+        height: 0px;
     }}
+
+    /* REMOVE PAGE AREAS */
+    QScrollBar::add-page,
+    QScrollBar::sub-page {{
+        background: none;
+    }}
+
 
     /* === Header views === */
     QHeaderView {{
