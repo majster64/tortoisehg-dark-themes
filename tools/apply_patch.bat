@@ -31,6 +31,7 @@ messageentry.py ^
 qscilib.py ^
 qtapp.py ^
 qtlib.py ^
+repofilter.py ^
 repomodel.py ^
 repoview.py ^
 repowidget.py ^

@@ -2,6 +2,7 @@
 #
 # Copyright (C) 2007-2010 Logilab. All rights reserved.
 # Copyright (C) 2010 Yuya Nishihara <yuya@tcha.org>
+# Copyright (C) 2026 Peter Demcak <majster64@gmail.com> (dark theme)
 #
 # This software may be used and distributed according to the terms of the
 # GNU General Public License version 2 or any later version.
@@ -65,6 +66,8 @@ if typing.TYPE_CHECKING:
     from . import (
         thgrepo,
     )
+
+from .theme import THEME
 
 _permanent_queries = ('head()', 'merge()',
                       'tagged()', 'bookmark()',
@@ -330,12 +333,28 @@ class RepoFilterBar(QToolBar):
             'keyword': (_('Keyword Search'), '#cccccc', '#eeeeee'),
             'revset':  (_('Revision Set'),   '#f6dd82', '#fcf1ca'),
             }[qtype]
+
         if self._isUnsavedQuery():
             name += ' ' + _('(unsaved)')
+
         label = self._revsettypelabel
         label.setText(name)
-        label.setStyleSheet('border: 1px solid %s; background-color: %s; '
-                            'color: black;' % (bordercolor, bgcolor))
+
+        # Override colors only when THEME is enabled
+        if THEME.enabled:
+            bordercolor = THEME.text_disabled.name()
+            textcolor = THEME.text.name()
+            if qtype == 'keyword':
+                bgcolor = THEME.background.name()
+            else:
+                bgcolor = THEME.backgroundLighter.name()
+        else:
+            textcolor = 'black'
+
+        label.setStyleSheet('border: 1px solid %s; background-color: %s;'
+                            'color: %s;' % (bordercolor, bgcolor, textcolor)
+        )
+
         label.show()
         self._updateQueryTypeGeometry()
 
