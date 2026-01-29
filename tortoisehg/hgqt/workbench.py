@@ -254,6 +254,13 @@ def build_dark_stylesheet(THEME):
         border: 1px solid {c.control_border.name()};
         font-size: 9pt;
     }}
+
+    /* === Tooltips === */
+    QToolTip {{
+        background-color: {c.backgroundLighter.name()};
+        color: {c.text.name()};
+        border: 1px solid {c.control_border.name()};
+    }}
     """
 
 def is_windows_11():
