@@ -1,6 +1,7 @@
 # csinfo.py - An embeddable widget for changeset summary
 #
 # Copyright 2010 Yuki KODAMA <endflow.net@gmail.com>
+# Copyright (C) 2026 Peter Demcak <majster64@gmail.com> (dark theme)
 #
 # This software may be used and distributed according to the terms of the
 # GNU General Public License version 2 or any later version.
@@ -30,6 +31,8 @@ from mercurial import (
 from ..util import hglib
 from ..util.i18n import _
 from . import qtlib
+
+from .theme import THEME
 
 PANEL_DEFAULT = ('rev', 'summary', 'user', 'dateage', 'branch', 'close',
                  'topic', 'tags', 'graft', 'transplant', 'obsolete',
@@ -316,6 +319,11 @@ class SummaryInfo:
                 return value
             elif item in ('rawbranch', 'branch'):
                 opts = dict(fg='black', bg='#aaffaa')
+                if THEME.enabled:
+                    opts = dict(
+                        fg=THEME.chip_text.name(),
+                        bg=THEME.chip_branch_background.name(),
+                    )
                 return qtlib.markup(' %s ' % value, **opts)
             elif item == 'topic':
                 opts = {
@@ -325,6 +333,11 @@ class SummaryInfo:
                 return qtlib.markup(' %s ' % value, **opts)
             elif item == 'tags':
                 opts = dict(fg='black', bg='#ffffaa')
+                if THEME.enabled:
+                    opts = dict(
+                        fg=THEME.chip_text.name(),
+                        bg=THEME.chip_tag_background.name(),
+                    )
                 tags = [qtlib.markup(' %s ' % tag, **opts) for tag in value]
                 return ' '.join(tags)
             elif item in ('desc', 'summary', 'user', 'shortuser',
@@ -334,6 +347,11 @@ class SummaryInfo:
                 return qtlib.markup('%s (%s)' % value)
             elif item == 'obsolete':
                 opts = dict(fg='black', bg='#ff8566')
+                if THEME.enabled:
+                    opts = dict(
+                        fg=THEME.error_text.name(),
+                        bg=THEME.error_background.name()
+                    )
                 obsoletestates = [qtlib.markup(' %s ' % state, **opts)
                                   for state in value]
                 return ' '.join(obsoletestates)

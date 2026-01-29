@@ -20,6 +20,7 @@ set FILES= ^
 blockmatcher.py ^
 chunks.py ^
 cmdui.py ^
+csinfo.py ^
 docklog.py ^
 filedata.py ^
 filelistview.py ^
