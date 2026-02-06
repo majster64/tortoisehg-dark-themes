@@ -1615,7 +1615,10 @@ class _ChunkSelectionViewControl(_AbstractViewControl):
             return
         for chunk in fd.changes.hunks:
             self._chunkatline[chunk.lineno] = chunk
-            self._updateMarker(chunk)
+            if THEME.enabled:
+                self._updateMarkerDark(chunk)
+            else:
+                self._updateMarker(chunk)
 
     def _updateMarker(self, chunk):
         excludemsg = ' ' + _('(excluded from the next commit)')
@@ -1658,6 +1661,46 @@ class _ChunkSelectionViewControl(_AbstractViewControl):
             self._sci.clearIndicatorRange(chunk.lineno + 1, 0,
                                           chunk.lineno + chunk.linecount, 0,
                                           self._excludeindicator)
+    def _updateMarkerDark(self, chunk):
+        # In dark theme, invert visual meaning of included/excluded chunks
+        includemsg = ' ' + _('(included in the next commit)')
+        m = self._sci.markersAtLine(chunk.lineno)
+        inclmarked = m & (1 << _IncludedChunkStartMarker)
+        exclmarked = m & (1 << _ExcludedChunkStartMarker)
+
+        if not chunk.excluded and not inclmarked:
+            self._sci.setReadOnly(False)
+            llen = self._sci.lineLength(chunk.lineno)
+            self._sci.insertAt(includemsg, chunk.lineno, llen - 1)
+            self._sci.setReadOnly(True)
+
+            self._sci.markerDelete(chunk.lineno, _ExcludedChunkStartMarker)
+            self._sci.markerAdd(chunk.lineno, _IncludedChunkStartMarker)
+            for i in pycompat.xrange(chunk.linecount - 1):
+                self._sci.markerAdd(chunk.lineno + i + 1, _ExcludedLineMarker)
+            self._sci.fillIndicatorRange(chunk.lineno + 1, 0,
+                                        chunk.lineno + chunk.linecount, 0,
+                                        self._excludeindicator)
+
+        if chunk.excluded and inclmarked:
+            self._sci.setReadOnly(False)
+            llen = self._sci.lineLength(chunk.lineno)
+            mlen = len(includemsg.encode('utf-8'))
+            pos = self._sci.positionFromLineIndex(chunk.lineno, llen - mlen - 1)
+            self._sci.SendScintilla(qsci.SCI_SETTARGETSTART, pos)
+            self._sci.SendScintilla(qsci.SCI_SETTARGETEND, pos + mlen)
+            self._sci.SendScintilla(qsci.SCI_REPLACETARGET, 0, b'')
+            self._sci.setReadOnly(True)
+
+        if chunk.excluded and not exclmarked:
+            self._sci.markerDelete(chunk.lineno, _IncludedChunkStartMarker)
+            self._sci.markerAdd(chunk.lineno, _ExcludedChunkStartMarker)
+            for i in pycompat.xrange(chunk.linecount - 1):
+                self._sci.markerDelete(chunk.lineno + i + 1,
+                                    _ExcludedLineMarker)
+            self._sci.clearIndicatorRange(chunk.lineno + 1, 0,
+                                        chunk.lineno + chunk.linecount, 0,
+                                        self._excludeindicator)
 
     #@pyqtSlot(int, int, Qt.KeyboardModifier)
     def _onMarginClicked(self, margin, line, state):
@@ -1689,7 +1732,10 @@ class _ChunkSelectionViewControl(_AbstractViewControl):
         for l in lines:
             chunk = self._chunkatline[l]
             self._fd.setChunkExcluded(chunk, excluded)
-            self._updateMarker(chunk)
+            if THEME.enabled:
+                self._updateMarkerDark(chunk)
+            else:
+                self._updateMarker(chunk)
         self.chunkSelectionChanged.emit()
 
     def _toggleChunkAtLine(self, line):
