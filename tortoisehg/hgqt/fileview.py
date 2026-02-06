@@ -1556,7 +1556,7 @@ class _ChunkSelectionViewControl(_AbstractViewControl):
 
         self._sci.markerDefine(qsci.MarkerSymbol.Background, _ExcludedLineMarker)
         if THEME.enabled:
-            bg, fg = THEME.diff_excluded, THEME.diff_text
+            bg, fg = THEME.diff_selected, THEME.diff_text
         elif qtlib.isDarkTheme(self._sci.palette()):
             bg, fg = QColor(44, 44, 44), QColor(86, 86, 86)
         else:

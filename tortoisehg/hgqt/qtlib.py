@@ -552,7 +552,7 @@ def get_thgstyles_dark():
     ),
 
     'resolve.unresolved': THEME.error_text.name(),
-    'resolve.resolved': THEME.success_text.name(),
+    'resolve.resolved': THEME.file_resolved.name(),
 
     # --- Emphasis / state --------------------------------------------
     'ui.emphasis': f'{THEME.text.name()} bold',

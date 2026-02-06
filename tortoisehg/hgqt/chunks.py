@@ -856,7 +856,7 @@ class DiffBrowser(QFrame):
             self.sci.setMarkerBackgroundColor(THEME.backgroundLighter, self.divider)
 
             # Selected chunk background
-            self.sci.setMarkerBackgroundColor(THEME.diff_excluded, self.selcolor)
+            self.sci.setMarkerBackgroundColor(THEME.diff_selected, self.selcolor)
 
 
     @pyqtSlot(str, bool, bool, bool)
