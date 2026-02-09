@@ -93,7 +93,9 @@ See `COPYING.txt` for details.
 
 ## Known limitations
 
-On Windows 10, the window title bar remains black and cannot be recolored due to OS limitations.
+- On Windows 10, the window title bar remains black and cannot be recolored due to OS limitations.
+- Dialogs opened via the system file manager (e.g. Visual Diff, Annotate, Revision History) do not follow the dark theme.
+
 ---
 
 Screenshot from Windows 10:
