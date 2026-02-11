@@ -34,7 +34,6 @@ qtapp.py ^
 qtlib.py ^
 repofilter.py ^
 repomodel.py ^
-repoview.py ^
 repowidget.py ^
 revpanel.py ^
 settings.py ^
