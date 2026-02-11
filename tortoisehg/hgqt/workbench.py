@@ -263,108 +263,6 @@ def build_dark_stylesheet(THEME):
     }}
     """
 
-def is_windows_11():
-    if sys.platform != 'win32':
-        return False
-    # Windows 11 reports build >= 22000
-    return int(platform.version().split('.')[-1]) >= 22000
-
-def qcolor_to_bgr_dword(color: QColor) -> int:
-    return (color.blue() << 16) | (color.green() << 8) | color.red()
-
-def enable_dark_title_bar(window):
-    """Enable dark title bar on Windows 10/11 with graceful fallback."""
-    import sys
-    if sys.platform != 'win32':
-        return
-
-    import ctypes
-    from ctypes import wintypes
-    import platform
-
-    hwnd = int(window.winId())
-    TRUE = wintypes.BOOL(1)
-
-    try:
-        dwmapi = ctypes.WinDLL('dwmapi')
-
-        # Enable immersive dark mode (Win10+)
-        for attr in (20, 19):
-            dwmapi.DwmSetWindowAttribute(
-                wintypes.HWND(hwnd),
-                wintypes.DWORD(attr),
-                ctypes.byref(TRUE),
-                ctypes.sizeof(TRUE)
-            )
-
-        build = int(platform.version().split('.')[-1])
-        if build >= 22000:
-            # Caption background
-            caption_bg = wintypes.DWORD(
-                qcolor_to_bgr_dword(THEME.titlebar_background)
-            )
-            dwmapi.DwmSetWindowAttribute(
-                wintypes.HWND(hwnd),
-                wintypes.DWORD(35),  # DWMWA_CAPTION_COLOR
-                ctypes.byref(caption_bg),
-                ctypes.sizeof(caption_bg)
-            )
-
-            # Caption text
-            caption_text = wintypes.DWORD(
-                qcolor_to_bgr_dword(THEME.titlebar_text)
-            )
-            dwmapi.DwmSetWindowAttribute(
-                wintypes.HWND(hwnd),
-                wintypes.DWORD(36),  # DWMWA_TEXT_COLOR
-                ctypes.byref(caption_text),
-                ctypes.sizeof(caption_text)
-            )
-
-    except Exception:
-        # Safe fallback
-        pass
-
-class DarkTitleBarFilter(QObject):
-    def __init__(self, main_window):
-        super().__init__()
-        self._main_window = main_window
-        self._applied = set()
-
-    def eventFilter(self, obj, event):
-        # Filter may receive non-QWidget objects → ignore
-        if not isinstance(obj, QWidget):
-            return False
-
-        # Only act on Show events
-        if event.type() != QEvent.Type.Show:
-            return False
-
-        # Only top-level windows
-        if obj.parent() is not None:
-            return False
-
-        # Never touch dialogs (QMessageBox, QDialog, etc.)
-        if obj.isModal() or (obj.windowFlags() & Qt.Dialog):
-            return False
-
-        # Only apply to the main window
-        if obj is not self._main_window:
-            return False
-
-        # Apply only once
-        if obj in self._applied:
-            return False
-
-        self._applied.add(obj)
-
-        try:
-            enable_dark_title_bar(obj)
-        except Exception:
-            pass
-
-        return False
-
 class DarkItemViewCheckStyle(QProxyStyle):
     def drawPrimitive(self, element, option, painter, widget=None):
         if THEME.enabled and element == QStyle.PrimitiveElement.PE_IndicatorItemViewItemCheck:
@@ -441,11 +339,6 @@ class Workbench(QMainWindow):
 
         self.setupUi()
 
-        if THEME.enabled and sys.platform == 'win32':
-            app = QApplication.instance()
-            self._dark_titlebar_filter = DarkTitleBarFilter(self)
-            app.installEventFilter(self._dark_titlebar_filter)
-        
         if THEME.enabled:
            # Apply dark mode stylesheet
            app = QApplication.instance()
