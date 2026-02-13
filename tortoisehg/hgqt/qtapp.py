@@ -37,7 +37,10 @@ from .qtcore import (
 )
 from .qtgui import (
     QApplication,
+    QDialog,
+    QMainWindow,
     QFont,
+    QWidget
 )
 from .qtnetwork import (
     QLocalServer,
@@ -67,8 +70,6 @@ from . import (
     thgrepo,
     workbench,
 )
-
-from PyQt5.QtWidgets import QWidget, QMainWindow, QDialog
 from .theme import THEME
 
 if os.name == 'nt' and getattr(sys, 'frozen', False):

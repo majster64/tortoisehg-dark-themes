@@ -22,8 +22,8 @@
 import re
 from typing import Optional
 
-from PyQt5.QtCore import QSettings
-from PyQt5.QtGui import QColor
+from .qtcore import QSettings
+from .qtgui import QColor
 
 from tortoisehg.util import hglib
 from mercurial import pycompat

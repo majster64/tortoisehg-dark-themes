@@ -35,6 +35,7 @@ from .qtgui import (
     QAction,
     QApplication,
     QCheckBox,
+    QColor,
     QDialog,
     QDialogButtonBox,
     QInputMethodEvent,
@@ -50,7 +51,6 @@ from ..util import hglib
 from ..util.i18n import _
 from . import qtlib
 from .theme import THEME
-from PyQt5.QtGui import QColor
 
 # indicator for highlighting preedit text of input method
 _IM_PREEDIT_INDIC_ID = QsciScintilla.INDIC_MAX

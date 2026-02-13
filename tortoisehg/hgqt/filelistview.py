@@ -27,7 +27,15 @@ from .qtcore import (
 )
 from .qtgui import (
     QAbstractItemView,
+    QBrush,
+    QMessageBox,
+    QSizePolicy,
+    QStyle,
+    QStyleOptionViewItem,
+    QStyledItemDelegate,
     QTreeView,
+    QVBoxLayout,
+    QWidget,
 )
 
 from ..util import hglib
@@ -44,13 +52,7 @@ if typing.TYPE_CHECKING:
     from .qtcore import (
         QAbstractItemModel,
     )
-    from .qtgui import (
-        QWidget,
-    )
 
-from PyQt5.QtWidgets import QStyledItemDelegate, QStyleOptionViewItem, QStyle
-from PyQt5.QtGui import QBrush
-from PyQt5.QtWidgets import QMessageBox
 from .theme import THEME
 
 class PreserveStatusColorDelegate(QStyledItemDelegate):

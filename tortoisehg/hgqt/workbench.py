@@ -27,6 +27,7 @@ from .qtgui import (
     QAction,
     QActionGroup,
     QApplication,
+    QColor,
     QComboBox,
     QFileDialog,
     QKeySequence,
@@ -34,6 +35,7 @@ from .qtgui import (
     QMenu,
     QMenuBar,
     QPainter,
+    QPalette,
     QPen,
     QProxyStyle,
     QShortcut,
@@ -41,6 +43,7 @@ from .qtgui import (
     QStyleOptionViewItem,
     QSizePolicy,
     QToolBar,
+    QWidget
 )
 
 from mercurial import (
@@ -65,9 +68,6 @@ from .docklog import LogDockWidget
 from .reporegistry import RepoRegistryView
 from .settings import SettingsDialog
 
-from .qtgui import QPalette, QColor
-from PyQt5.QtCore import QObject, QEvent
-from PyQt5.QtWidgets import QWidget
 from .theme import THEME
 import sys
 

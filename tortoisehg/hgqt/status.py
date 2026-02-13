@@ -29,6 +29,7 @@ from .qtcore import (
 from .qtgui import (
     QAbstractItemView,
     QAction,
+    QBrush,
     QCheckBox,
     QColor,
     QDialog,
@@ -37,10 +38,14 @@ from .qtgui import (
     QKeySequence,
     QLineEdit,
     QMenu,
+    QPalette,
     QPushButton,
     QShortcut,
     QSizePolicy,
     QSplitter,
+    QStyle,
+    QStyleOptionViewItem,
+    QStyledItemDelegate,
     QToolBar,
     QToolButton,
     QTreeView,
@@ -76,10 +81,7 @@ from typing import (
     Dict,
 )
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPalette, QBrush
-from PyQt5.QtWidgets import QStyledItemDelegate, QStyle, QStyleOptionViewItem
-from PyQt5.QtCore import QTimer
+from .qtcore import Qt, QTimer
 from .theme import THEME
 
 # This widget can be used as the basis of the commit tool or any other

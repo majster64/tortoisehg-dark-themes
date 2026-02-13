@@ -31,6 +31,8 @@ from .qtgui import (
     QLabel,
     QMenu,
     QPainter,
+    QPixmap,
+    QPen,
     QSplitter,
     QStyle,
     QToolBar,
@@ -64,7 +66,6 @@ from . import (
 )
 
 from .theme import THEME
-from PyQt5.QtGui import QPixmap, QPainter, QColor, QPen
 
 # TODO
 # Add support for tools like TortoiseMerge that help resolve rejected chunks

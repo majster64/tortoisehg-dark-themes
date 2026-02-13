@@ -41,7 +41,10 @@ from .qtgui import (
     QKeySequence,
     QLabel,
     QMouseEvent,
+    QPainter,
     QPalette,
+    QPixmap,
+    QPen,
     QShortcut,
     QStyle,
     QToolBar,
@@ -81,7 +84,6 @@ if typing.TYPE_CHECKING:
     )
 
 from .theme import THEME
-from PyQt5.QtGui import QPixmap, QPainter, QColor, QPen
 
 qsci = qscilib.Scintilla
 
