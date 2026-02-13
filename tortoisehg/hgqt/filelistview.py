@@ -60,28 +60,29 @@ class PreserveStatusColorDelegate(QStyledItemDelegate):
         opt = QStyleOptionViewItem(option)
         self.initStyleOption(opt, index)
 
-        if opt.state & QStyle.State_Selected:
+        opt_state = opt.state.value if hasattr(opt.state, 'value') else opt.state
+        if opt_state & qtlib.QtStateFlag.State_Selected:
             # preserve per-item foreground color
-            fg = index.data(Qt.ForegroundRole)
+            fg = index.data(qtlib.QtItemDataRole.ForegroundRole)
             if isinstance(fg, QBrush):
                 brush = fg
             elif fg is not None:
                 brush = QBrush(fg)
             else:
-                brush = opt.palette.brush(opt.palette.Text)
-
-            # critical for keyboard selection
-            opt.palette.setBrush(opt.palette.HighlightedText, brush)
-            opt.palette.setBrush(opt.palette.Text, brush)
+                brush = opt.palette.brush(qtlib.QtPaletteRole.Text)
 
             painter.save()
-            painter.setPen(Qt.yellow)
+            painter.setPen(qtlib.QtGlobalColor.yellow)
             painter.drawText(
                 option.rect.adjusted(4, 0, 0, 0),
-                Qt.AlignLeft | Qt.AlignVCenter,
+                qtlib.QtAlignment.AlignLeft | qtlib.QtAlignment.AlignVCenter,
                 "DELEGATE"
             )
             painter.restore()
+
+            # critical for keyboard selection
+            opt.palette.setBrush(qtlib.QtPaletteRole.HighlightedText, brush)
+            opt.palette.setBrush(qtlib.QtPaletteRole.Text, brush)
 
         super().paint(painter, opt, index)
 

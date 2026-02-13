@@ -121,16 +121,16 @@ class _LogWidgetForConsole(cmdui.LogWidget):
     def keyPressEvent(self, event):
         cursoronprompt = not self.isReadOnly()
         if cursoronprompt:
-            if event.key() == Qt.Key.Key_Up:
+            if event.key() == qtlib.QtKey.Up:
                 return self.historyRequested.emit(self.commandText(), -1)
-            elif event.key() == Qt.Key.Key_Down:
+            elif event.key() == qtlib.QtKey.Down:
                 return self.historyRequested.emit(self.commandText(), +1)
             del self._savedcommands[:]  # settle candidate by user input
-            if event.key() in (Qt.Key.Key_Return, Qt.Key.Key_Enter):
+            if event.key() in (qtlib.QtKey.Return, qtlib.QtKey.Enter):
                 return self.returnPressed.emit(self.commandText())
-            if event.key() == Qt.Key.Key_Tab:
+            if event.key() == qtlib.QtKey.Tab:
                 return self.completeRequested.emit(self.commandText())
-        if event.key() == Qt.Key.Key_Escape:
+        if event.key() == qtlib.QtKey.Escape:
             # When ESC is pressed, if the cursor is on the prompt,
             # this clears it, if not, this moves the cursor to the prompt
             self.setCommandText('')

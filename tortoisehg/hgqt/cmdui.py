@@ -297,7 +297,7 @@ class LogWidget(qscilib.ScintillaCompat):
 
     def keyPressEvent(self, event):
         # propagate key events important for dialog
-        if event.key() == Qt.Key.Key_Escape:
+        if event.key() == qtlib.QtKey.Escape:
             event.ignore()
             return
         super().keyPressEvent(event)

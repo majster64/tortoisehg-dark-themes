@@ -198,8 +198,8 @@ class ScintillaCompat(QsciScintilla):
     # QScintilla 2.5 can translate Backtab to Shift+SCK_TAB (issue #82)
     if QSCINTILLA_VERSION < 0x20500:
         def keyPressEvent(self, event):
-            if event.key() == Qt.Key.Key_Backtab:
-                event = QKeyEvent(event.type(), Qt.Key.Key_Tab, Qt.KeyboardModifier.ShiftModifier)
+            if event.key() == qtlib.QtKey.Backtab:
+                event = QKeyEvent(event.type(), qtlib.QtKey.Tab, qtlib.QtModifier.SHIFT)
             super().keyPressEvent(event)
 
     if not hasattr(QsciScintilla, 'createStandardContextMenu'):
@@ -555,7 +555,7 @@ class SearchToolBar(QToolBar):
         self.setIconSize(qtlib.smallIconSize())
 
         a = self.addAction(qtlib.geticon('window-close'), '')
-        a.setShortcut(Qt.Key.Key_Escape)
+        a.setShortcut(qtlib.QtKey.Escape)
         a.setShortcutContext(Qt.ShortcutContext.WidgetWithChildrenShortcut)
         a.triggered.connect(self.hide)
         self.addWidget(qtlib.Spacer(2, 2))
@@ -598,7 +598,7 @@ class SearchToolBar(QToolBar):
         self._updateSearchButtons()
 
     def keyPressEvent(self, event):
-        if event.key() in (Qt.Key.Key_Enter, Qt.Key.Key_Return):
+        if event.key() in (qtlib.QtKey.Enter, qtlib.QtKey.Return):
             return  # handled by returnPressed
         super().keyPressEvent(event)
 
@@ -689,7 +689,7 @@ class KeyPressInterceptor(QObject):
 
     def __init__(self, parent=None, keys=None, keyseqs=None):
         super().__init__(parent)
-        self._keys = {Qt.Key.Key_Escape}
+        self._keys = {qtlib.QtKey.Escape}
         self._keyseqs = [QKeySequence.StandardKey.Refresh]
         if keys:
             self._keys.update(keys)
@@ -716,7 +716,7 @@ def unbindConflictedKeys(sci):
     cmdset = sci.standardCommands()
     try:
         cmd = cmdset.boundTo(
-            qtlib.keyCombinationValue(Qt.Modifier.CTRL | Qt.Key.Key_L)
+            qtlib.keyCombinationValue(qtlib.QtModifier.CTRL | qtlib.QtKey.L)
         )
         if cmd:
             cmd.setKey(0)

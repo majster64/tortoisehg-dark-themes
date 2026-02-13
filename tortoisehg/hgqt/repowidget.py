@@ -2011,7 +2011,7 @@ class RepoWidget(QWidget):
             branch=self.repo[self.rev].branch())
 
     def manifestRevision(self):
-        if QApplication.keyboardModifiers() & Qt.KeyboardModifier.ShiftModifier:
+        if QApplication.keyboardModifiers() & qtlib.QtKeyboardModifier.ShiftModifier:
             self._dialogs.openNew(RepoWidget._createManifestDialog)
         else:
             dlg = self._dialogs.open(RepoWidget._createManifestDialog)

@@ -680,7 +680,7 @@ class DiffBrowser(QFrame):
 
     def _patch_checkbox_pixmap(self, pm):
         painter = QPainter(pm)
-        painter.setRenderHint(QPainter.Antialiasing, False)
+        painter.setRenderHint(qtlib.QtPainterRenderHint.Antialiasing, False)
 
         painter.setPen(QPen(THEME.diff_text))
         painter.drawRect(2, 0, pm.width() - 1 - 4, pm.height() - 1)

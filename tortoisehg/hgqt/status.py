@@ -240,7 +240,7 @@ class StatusWidget(QWidget):
         self.le = le
         self._tvpaletteswitcher = qtlib.PaletteSwitcher(tv)
 
-        self._togglefileshortcut = a = QShortcut(Qt.Key.Key_Space, tv)
+        self._togglefileshortcut = a = QShortcut(qtlib.QtKey.Space, tv)
         a.setContext(Qt.ShortcutContext.WidgetShortcut)
         a.setEnabled(False)
         a.activated.connect(self._toggleSelectedFiles)
@@ -794,18 +794,19 @@ class WctxPreserveStatusColorDelegate(QStyledItemDelegate):
         opt = QStyleOptionViewItem(option)
         self.initStyleOption(opt, index)
 
-        if opt.state & QStyle.State_Selected:
-            fg = index.data(Qt.ForegroundRole)
+        opt_state = opt.state.value if hasattr(opt.state, 'value') else opt.state
+        if opt_state & qtlib.QtStateFlag.State_Selected:
+            fg = index.data(qtlib.QtItemDataRole.ForegroundRole)
             if isinstance(fg, QBrush):
                 brush = fg
             elif fg is not None:
                 brush = QBrush(fg)
             else:
-                brush = opt.palette.brush(QPalette.Text)
+                brush = opt.palette.brush(qtlib.QtPaletteRole.Text)
 
             # critical: keyboard selection path uses HighlightedText
-            opt.palette.setBrush(QPalette.HighlightedText, brush)
-            opt.palette.setBrush(QPalette.Text, brush)
+            opt.palette.setBrush(qtlib.QtPaletteRole.HighlightedText, brush)
+            opt.palette.setBrush(qtlib.QtPaletteRole.Text, brush)
 
         super().paint(painter, opt, index)
 
@@ -819,21 +820,22 @@ class WctxFileTree(QTreeView):
 
     
     def drawRow(self, painter, option, index):
-        if option.state & QStyle.State_Selected:
+        option_state = option.state.value if hasattr(option.state, 'value') else option.state
+        if option_state & qtlib.QtStateFlag.State_Selected:
             opt = QStyleOptionViewItem(option)
 
             # get per-item foreground color (status color)
-            fg = index.data(Qt.ForegroundRole)
+            fg = index.data(qtlib.QtItemDataRole.ForegroundRole)
             if isinstance(fg, QBrush):
                 brush = fg
             elif fg is not None:
                 brush = QBrush(fg)
             else:
-                brush = opt.palette.brush(QPalette.Text)
+                brush = opt.palette.brush(qtlib.QtPaletteRole.Text)
 
             # force Qt to use status color even for keyboard selection
-            opt.palette.setBrush(QPalette.HighlightedText, brush)
-            opt.palette.setBrush(QPalette.Text, brush)
+            opt.palette.setBrush(qtlib.QtPaletteRole.HighlightedText, brush)
+            opt.palette.setBrush(qtlib.QtPaletteRole.Text, brush)
 
             super().drawRow(painter, opt, index)
             return

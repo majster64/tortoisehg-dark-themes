@@ -268,7 +268,7 @@ class BlockMatch(BlockList):
         w = self.width()
         h = self.height()
         p = QPainter(self)
-        p.setRenderHint(QPainter.RenderHint.Antialiasing)
+        p.setRenderHint(qtlib.QtPainterRenderHint.Antialiasing)
 
         ps_l = float(self._pagestep['left'])
         ps_r = float(self._pagestep['right'])

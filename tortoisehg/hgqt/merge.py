@@ -549,8 +549,8 @@ class CommitPage(BasePage):
                 self.wizard().next()
         actionEnter = QAction('alt-enter', self)
         actionEnter.setShortcuts([
-            qtlib.keyCombinationValue(Qt.Modifier.CTRL | Qt.Key.Key_Return),
-            qtlib.keyCombinationValue(Qt.Modifier.CTRL | Qt.Key.Key_Enter),
+            qtlib.keyCombinationValue(qtlib.QtModifier.CTRL | qtlib.QtKey.Return),
+            qtlib.keyCombinationValue(qtlib.QtModifier.CTRL | qtlib.QtKey.Enter),
         ])
         actionEnter.triggered.connect(tryperform)
         self.addAction(actionEnter)

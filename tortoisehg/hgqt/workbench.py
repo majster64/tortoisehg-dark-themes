@@ -75,22 +75,22 @@ def apply_dark_palette(app):
     pal = QPalette()
 
     # Basic colors
-    pal.setColor(QPalette.Window, THEME.background)
-    pal.setColor(QPalette.Base, THEME.background)
-    pal.setColor(QPalette.AlternateBase, THEME.backgroundLighter)
+    pal.setColor(qtlib.QtPaletteRole.Window, THEME.background)
+    pal.setColor(qtlib.QtPaletteRole.Base, THEME.background)
+    pal.setColor(qtlib.QtPaletteRole.AlternateBase, THEME.backgroundLighter)
 
-    pal.setColor(QPalette.Text, THEME.text)
-    pal.setColor(QPalette.WindowText, THEME.text)
+    pal.setColor(qtlib.QtPaletteRole.Text, THEME.text)
+    pal.setColor(qtlib.QtPaletteRole.WindowText, THEME.text)
 
-    pal.setColor(QPalette.Mid, THEME.backgroundLighter)
-    pal.setColor(QPalette.Dark, THEME.background)
-    pal.setColor(QPalette.Light, THEME.backgroundLighter)
+    pal.setColor(qtlib.QtPaletteRole.Mid, THEME.backgroundLighter)
+    pal.setColor(qtlib.QtPaletteRole.Dark, THEME.background)
+    pal.setColor(qtlib.QtPaletteRole.Light, THEME.backgroundLighter)
     
-    pal.setColor(QPalette.Highlight, THEME.selection_background)
-    pal.setColor(QPalette.HighlightedText, THEME.selection_text)
+    pal.setColor(qtlib.QtPaletteRole.Highlight, THEME.selection_background)
+    pal.setColor(qtlib.QtPaletteRole.HighlightedText, THEME.selection_text)
 
     # Disabled text
-    pal.setColor(QPalette.Disabled, QPalette.Text, THEME.text_disabled)
+    pal.setColor(qtlib.QtPaletteGroup.Disabled, qtlib.QtPaletteRole.Text, THEME.text_disabled)
 
     app.setPalette(pal)
 
@@ -267,7 +267,7 @@ class DarkItemViewCheckStyle(QProxyStyle):
     def drawPrimitive(self, element, option, painter, widget=None):
         if THEME.enabled and element == QStyle.PrimitiveElement.PE_IndicatorItemViewItemCheck:
             painter.save()
-            painter.setRenderHint(QPainter.RenderHint.Antialiasing, False)
+            painter.setRenderHint(qtlib.QtPainterRenderHint.Antialiasing, False)
 
             # Use a reliable rect for item-view checkbox
             style = self.baseStyle()
@@ -299,7 +299,7 @@ class DarkItemViewCheckStyle(QProxyStyle):
             dy = 1
 
              # Enable antialiasing
-            painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
+            painter.setRenderHint(qtlib.QtPainterRenderHint.Antialiasing, True)
 
             if is_checked:
                 # Classic checkmark
@@ -319,7 +319,7 @@ class DarkItemViewCheckStyle(QProxyStyle):
                 painter.setPen(Qt.PenStyle.NoPen)
                 painter.setBrush(mark_color)
                 painter.drawRect(square)
-                painter.setRenderHint(QPainter.RenderHint.Antialiasing, False)
+                painter.setRenderHint(qtlib.QtPainterRenderHint.Antialiasing, False)
 
             painter.restore()
             return  # stop Qt from drawing anything else
@@ -345,7 +345,7 @@ class Workbench(QMainWindow):
            apply_dark_palette(app)
 
            base = app.setStyle("Fusion") # Needed for scrollbars
-           app.setStyle(DarkItemViewCheckStyle(base))
+           app.setStyle(DarkItemViewCheckStyle(base)) # Custom checkbox style
            app.setStyleSheet(build_dark_stylesheet(THEME))
 
         repomanager.busyChanged.connect(self._onBusyChanged)
@@ -1166,7 +1166,7 @@ class Workbench(QMainWindow):
 
     @pyqtSlot()
     def refresh(self):
-        clear = QApplication.keyboardModifiers() & Qt.KeyboardModifier.ControlModifier
+        clear = QApplication.keyboardModifiers() & qtlib.QtKeyboardModifier.ControlModifier
         w = self._currentRepoWidget()
         if w:
             # check unnoticed changes to emit corresponding signals

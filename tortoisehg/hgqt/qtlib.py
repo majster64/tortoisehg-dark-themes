@@ -113,6 +113,7 @@ from ..util import (
     terminal,
 )
 from ..util.i18n import _
+from .theme import THEME
 
 try:
     import win32con  # pytype: disable=import-error
@@ -120,7 +121,157 @@ try:
 except ImportError:
     openflags = 0
 
-from .theme import THEME
+# Qt5/Qt6 compatibility: Unified enum aliases
+# PyQt5 uses flat enum names (e.g., Qt.Key_Escape), while PyQt6 uses nested
+# enums (e.g., Qt.Key.Key_Escape). This section creates compatible IntEnum
+# wrappers so code can use consistent names regardless of the Qt version.
+from enum import IntEnum
+
+if QT_API == 'PyQt6':
+    from PyQt6.QtCore import Qt as _QtCore_Qt
+    from PyQt6.QtGui import QPalette as _QPalette_cls, QPainter as _QPainter_cls
+    from PyQt6.QtWidgets import QStyle as _QStyle_cls
+    # PyQt6: create IntEnum wrappers so attribute names match PyQt5-style access
+    class QtKey(IntEnum):
+        Escape = int(_QtCore_Qt.Key.Key_Escape.value)
+        Tab = int(_QtCore_Qt.Key.Key_Tab.value)
+        Backtab = int(_QtCore_Qt.Key.Key_Backtab.value)
+        Return = int(_QtCore_Qt.Key.Key_Return.value)
+        Enter = int(_QtCore_Qt.Key.Key_Enter.value)
+        Space = int(_QtCore_Qt.Key.Key_Space.value)
+        Up = int(_QtCore_Qt.Key.Key_Up.value)
+        Down = int(_QtCore_Qt.Key.Key_Down.value)
+        Backspace = int(_QtCore_Qt.Key.Key_Backspace.value)
+        Delete = int(_QtCore_Qt.Key.Key_Delete.value)
+        L = int(_QtCore_Qt.Key.Key_L.value)
+        E = int(_QtCore_Qt.Key.Key_E.value)
+
+    class QtModifier(IntEnum):
+        CTRL = int(_QtCore_Qt.KeyboardModifier.ControlModifier.value)
+        SHIFT = int(_QtCore_Qt.KeyboardModifier.ShiftModifier.value)
+        ALT = int(_QtCore_Qt.KeyboardModifier.AltModifier.value)
+        META = int(_QtCore_Qt.KeyboardModifier.MetaModifier.value)
+
+    # For PyQt6, use the native KeyboardModifier so bitwise ops with
+    # QApplication.keyboardModifiers() work as expected.
+    QtKeyboardModifier = _QtCore_Qt.KeyboardModifier
+
+    QtPaletteRole = _QPalette_cls.ColorRole
+    QtPaletteGroup = _QPalette_cls.ColorGroup
+    
+    # QStyle State Flag PyQt6 - wrapped as ints for bitwise operations
+    class QtStateFlag:
+        State_Selected = int(_QStyle_cls.StateFlag.State_Selected.value)
+        State_Enabled = int(_QStyle_cls.StateFlag.State_Enabled.value)
+        State_Active = int(_QStyle_cls.StateFlag.State_Active.value)
+        State_On = int(_QStyle_cls.StateFlag.State_On.value)
+        State_Off = int(_QStyle_cls.StateFlag.State_Off.value)
+    
+    QtItemDataRole = _QtCore_Qt.ItemDataRole
+    QtGlobalColor = _QtCore_Qt.GlobalColor
+    QtAlignment = _QtCore_Qt.AlignmentFlag
+    QtPainterRenderHint = _QPainter_cls.RenderHint
+    QtPainterCompositionMode = _QPainter_cls.CompositionMode
+
+else:  # PyQt5
+    from .qtcore import Qt as _QtCore
+    from .qtgui import QStyle as _QStyle, QPainter as _QPainter, QPalette as _QPalette
+    
+    class QtKey(IntEnum):
+        Escape = _QtCore.Key_Escape
+        Tab = _QtCore.Key_Tab
+        Backtab = _QtCore.Key_Backtab
+        Return = _QtCore.Key_Return
+        Enter = _QtCore.Key_Enter
+        Space = _QtCore.Key_Space
+        Up = _QtCore.Key_Up
+        Down = _QtCore.Key_Down
+        Backspace = _QtCore.Key_Backspace
+        Delete = _QtCore.Key_Delete
+        L = _QtCore.Key_L
+        E = _QtCore.Key_E
+    
+    class QtModifier(IntEnum):
+        CTRL = _QtCore.ControlModifier
+        SHIFT = _QtCore.ShiftModifier
+        ALT = _QtCore.AltModifier
+        META = _QtCore.MetaModifier
+    
+    class QtKeyboardModifier(IntEnum):
+        ControlModifier = _QtCore.ControlModifier
+        ShiftModifier = _QtCore.ShiftModifier
+        AltModifier = _QtCore.AltModifier
+        MetaModifier = _QtCore.MetaModifier
+    
+    class QtPaletteRole(IntEnum):
+        Window = _QPalette.Window
+        Base = _QPalette.Base
+        AlternateBase = _QPalette.AlternateBase
+        Text = _QPalette.Text
+        WindowText = _QPalette.WindowText
+        Mid = _QPalette.Mid
+        Dark = _QPalette.Dark
+        Light = _QPalette.Light
+        Highlight = _QPalette.Highlight
+        HighlightedText = _QPalette.HighlightedText
+    
+    class QtPaletteGroup(IntEnum):
+        Active = _QPalette.Active
+        Inactive = _QPalette.Inactive
+        Disabled = _QPalette.Disabled
+    
+    class QtStateFlag(IntEnum):
+        State_Selected = _QStyle.State_Selected
+        State_Enabled = _QStyle.State_Enabled
+        State_Active = _QStyle.State_Active
+        State_On = _QStyle.State_On
+        State_Off = _QStyle.State_Off
+
+    class QtItemDataRole(IntEnum):
+        ForegroundRole = _QtCore.ForegroundRole
+        BackgroundRole = _QtCore.BackgroundRole
+        DisplayRole = _QtCore.DisplayRole
+        DecorationRole = _QtCore.DecorationRole
+        ToolTipRole = _QtCore.ToolTipRole
+    
+    class QtGlobalColor(IntEnum):
+        red = _QtCore.red
+        green = _QtCore.green
+        blue = _QtCore.blue
+        black = _QtCore.black
+        white = _QtCore.white
+        gray = _QtCore.gray
+        cyan = _QtCore.cyan
+        magenta = _QtCore.magenta
+        yellow = _QtCore.yellow
+        darkRed = _QtCore.darkRed
+        darkGreen = _QtCore.darkGreen
+        darkBlue = _QtCore.darkBlue
+        darkCyan = _QtCore.darkCyan
+        darkMagenta = _QtCore.darkMagenta
+        darkYellow = _QtCore.darkYellow
+        lightGray = _QtCore.lightGray
+    
+    class QtAlignment(IntEnum):
+        AlignLeft = _QtCore.AlignLeft
+        AlignRight = _QtCore.AlignRight
+        AlignHCenter = _QtCore.AlignHCenter
+        AlignTop = _QtCore.AlignTop
+        AlignBottom = _QtCore.AlignBottom
+        AlignVCenter = _QtCore.AlignVCenter
+        AlignCenter = _QtCore.AlignCenter
+        AlignJustify = _QtCore.AlignJustify
+        AlignAbsolute = _QtCore.AlignAbsolute
+        AlignLeading = _QtCore.AlignLeading
+        AlignTrailing = _QtCore.AlignTrailing
+    
+    class QtPainterRenderHint(IntEnum):
+        Antialiasing = _QPainter.Antialiasing
+        SmoothPixmapTransform = _QPainter.SmoothPixmapTransform
+        TextAntialiasing = _QPainter.TextAntialiasing
+    
+    class QtPainterCompositionMode(IntEnum):
+        CompositionMode_SourceOver = _QPainter.CompositionMode_SourceOver
 
 _W = TypeVar('_W', bound=QWidget)
 
@@ -854,7 +1005,7 @@ def getoverlaidicon(base: QIcon, overlay: QIcon) -> QIcon:
     """Generate an overlaid icon"""
     pixmap = base.pixmap(16, 16)
     painter = QPainter(pixmap)
-    painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_SourceOver)
+    painter.setCompositionMode(QtPainterCompositionMode.CompositionMode_SourceOver)
     painter.drawPixmap(0, 0, overlay.pixmap(16, 16))
     del painter
     return QIcon(pixmap)

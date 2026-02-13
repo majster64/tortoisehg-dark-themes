@@ -304,7 +304,7 @@ class MessageEntry(qscilib.Scintilla):
             self.horizontalScrollBar().setSliderPosition(0)
 
     def keyPressEvent(self, event):
-        if event.modifiers() == Qt.KeyboardModifier.ControlModifier and event.key() == Qt.Key.Key_E:
+        if event.modifiers() == qtlib.QtModifier.CTRL and event.key() == qtlib.QtKey.E:
             line, col = self.getCursorPosition()
             self.reflowBlock(line)
         else:

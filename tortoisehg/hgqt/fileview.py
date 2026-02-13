@@ -771,7 +771,7 @@ class _AbstractViewControl(QObject):
         vp.setAutoFillBackground(True)
 
         pal = vp.palette()
-        pal.setColor(QPalette.Window, THEME.background)
+        pal.setColor(qtlib.QtPaletteRole.Window, THEME.background)
         vp.setPalette(pal)
 
     def _forceDarkViewportLater(self):
@@ -795,7 +795,7 @@ class _AbstractViewControl(QObject):
         vp = sci.viewport()
         vp.setAutoFillBackground(True)
         pal = vp.palette()
-        pal.setColor(QPalette.Window, THEME.background)
+        pal.setColor(qtlib.QtPaletteRole.Window, THEME.background)
         vp.setPalette(pal)
 
         # selection (compatible with old Scintilla)
@@ -1503,7 +1503,7 @@ class _AnnotateViewControl(_AbstractViewControl):
 
         interval = QApplication.doubleClickInterval()
         lastclick = self._lastmarginclick
-        if (state == Qt.KeyboardModifier.ControlModifier
+        if (state == qtlib.QtKeyboardModifier.ControlModifier
             or (lastclick.isValid() and not lastclick.hasExpired(interval))):
             if line >= len(self._links):
                 # empty line next to the last line
@@ -1516,7 +1516,7 @@ class _AnnotateViewControl(_AbstractViewControl):
 
             # mimic the default "border selection" behavior,
             # which is disabled when you use setMarginSensitivity()
-            if state == Qt.KeyboardModifier.ShiftModifier:
+            if state == qtlib.QtKeyboardModifier.ShiftModifier:
                 r = self._sci.getSelection()
                 sellinetop, selchartop, sellinebottom, selcharbottom = r
                 if sellinetop <= line:
@@ -1581,7 +1581,7 @@ class _ChunkSelectionViewControl(_AbstractViewControl):
         self._sci.setIndicatorForegroundColor(QColor('gray'),
                                               self._excludeindicator)
 
-        self._toggleshortcut = a = QShortcut(Qt.Key.Key_Space, sci)
+        self._toggleshortcut = a = QShortcut(qtlib.QtKey.Space, sci)
         a.setContext(Qt.ShortcutContext.WidgetShortcut)
         a.setEnabled(False)
         a.activated.connect(self._toggleCurrentChunk)
@@ -1591,7 +1591,7 @@ class _ChunkSelectionViewControl(_AbstractViewControl):
 
     def _patch_checkbox_pixmap(self, pm):
         painter = QPainter(pm)
-        painter.setRenderHint(QPainter.Antialiasing, False)
+        painter.setRenderHint(qtlib.QtPainterRenderHint.Antialiasing, False)
 
         painter.setPen(QPen(THEME.diff_text))
         painter.drawRect(1, 0, pm.width() - 1 - 2, pm.height() - 1)
@@ -1710,7 +1710,7 @@ class _ChunkSelectionViewControl(_AbstractViewControl):
             return
         if line not in self._chunkatline:
             return
-        if state & Qt.KeyboardModifier.ShiftModifier:
+        if state & qtlib.QtKeyboardModifier.ShiftModifier:
             excluded = self._getChunkAtLine(line)
             cl = self._currentChunkLine()
             end = max(line, cl)
