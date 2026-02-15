@@ -114,8 +114,8 @@ def build_dark_stylesheet(THEME):
         background-color: {c.background.name()};
         color: {c.control_text.name()};
         border: 1px solid {c.control_border.name()};
-        selection-background-color: {c.control_background.name()};
-        selection-color: {c.control_text.name()};
+        selection-background-color: {c.selection_background.name()};
+        selection-color: {c.selection_text.name()};
     }}
 
     QTreeView, QListView, QTableView {{
