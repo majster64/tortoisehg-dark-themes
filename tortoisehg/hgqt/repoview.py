@@ -73,6 +73,7 @@ from . import (
     qtlib,
     repomodel,
 )
+from .theme import THEME
 
 class HgRepoView(QTableView):
 
@@ -107,6 +108,8 @@ class HgRepoView(QTableView):
         header.sectionMoved.connect(self._saveColumnSettings)
 
         self.createActions()
+        # Set delegate for all columns to apply selection background workaround
+        self.setItemDelegate(SelectionWorkaroundDelegate(self))
         self.setItemDelegateForColumn(repomodel.GraphColumn,
                                       GraphDelegate(self))
         self.setItemDelegateForColumn(repomodel.DescColumn,
@@ -534,7 +537,18 @@ def _edge_color(edge, active):
         return colors[edge.color % len(colors)]
 
 
-class GraphDelegate(QStyledItemDelegate):
+class SelectionWorkaroundDelegate(QStyledItemDelegate):
+    """Delegate that applies Windows 11 PyQt6 selection background workaround"""
+
+    def paint(self, painter, option, index):
+        if THEME.enabled:
+            option_state = option.state.value if hasattr(option.state, 'value') else option.state
+            if option_state & qtlib.QtStateFlag.State_Selected:
+                painter.fillRect(option.rect, THEME.selection_background)
+        super().paint(painter, option, index)
+
+
+class GraphDelegate(SelectionWorkaroundDelegate):
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -552,7 +566,11 @@ class GraphDelegate(QStyledItemDelegate):
         return 0.4 * self._rowheight
 
     def paint(self, painter, option, index):
-        QStyledItemDelegate.paint(self, painter, option, index)
+        if THEME.enabled:
+            super().paint(painter, option, index)
+        else:
+            QStyledItemDelegate.paint(self, painter, option, index)
+
         # update to the actual height that should be the same for all rows
         self._rowheight = option.rect.height()
         visibleend = self._colcount(option.rect.width())
@@ -775,7 +793,7 @@ class _LabelsLayout:
             x += lw + self._margin
 
 
-class LabeledDelegate(QStyledItemDelegate):
+class LabeledDelegate(SelectionWorkaroundDelegate):
     """Render text labels in place of icon/pixmap decoration"""
 
     def __init__(self, parent=None, margin=2):
@@ -796,6 +814,7 @@ class LabeledDelegate(QStyledItemDelegate):
             option.features |= QStyleOptionViewItem.ViewItemFeature.HasDecoration
 
     def paint(self, painter, option, index):
+
         super().paint(painter, option, index)
         labels = index.data(repomodel.LabelsRole)
         if not labels:
