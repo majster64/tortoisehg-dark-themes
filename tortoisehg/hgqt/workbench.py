@@ -326,6 +326,15 @@ class DarkItemViewCheckStyle(QProxyStyle):
 
         super().drawPrimitive(element, option, painter, widget)
 
+    def subElementRect(self, element, option, widget=None):
+        rect = super().subElementRect(element, option, widget)
+        if THEME.enabled and element == QStyle.SubElement.SE_ItemViewItemCheckIndicator:
+            # Fusion style returns a smaller hit rect than Windows style;
+            # expand it back so clicks register anywhere on the visible indicator
+            rect = rect.adjusted(-1, -1, 1, 1)
+            pass
+        return rect
+
 class Workbench(QMainWindow):
     """hg repository viewer/browser application"""
 
@@ -345,7 +354,7 @@ class Workbench(QMainWindow):
            apply_dark_palette(app)
 
            base = app.setStyle("Fusion") # Needed for scrollbars
-           app.setStyle(DarkItemViewCheckStyle(base)) # Custom checkbox style
+           app.setStyle(DarkItemViewCheckStyle(base)) # Custom checkbox style for HgFileListView
            app.setStyleSheet(build_dark_stylesheet(THEME))
 
         repomanager.busyChanged.connect(self._onBusyChanged)
