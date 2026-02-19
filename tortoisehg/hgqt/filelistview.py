@@ -71,15 +71,6 @@ class PreserveStatusColorDelegate(QStyledItemDelegate):
             else:
                 brush = opt.palette.brush(qtlib.QtPaletteRole.Text)
 
-            painter.save()
-            painter.setPen(qtlib.QtGlobalColor.yellow)
-            painter.drawText(
-                option.rect.adjusted(4, 0, 0, 0),
-                qtlib.QtAlignment.AlignLeft | qtlib.QtAlignment.AlignVCenter,
-                "DELEGATE"
-            )
-            painter.restore()
-
             # critical for keyboard selection
             opt.palette.setBrush(qtlib.QtPaletteRole.HighlightedText, brush)
             opt.palette.setBrush(qtlib.QtPaletteRole.Text, brush)

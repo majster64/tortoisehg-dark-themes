@@ -333,10 +333,8 @@ class RepoFilterBar(QToolBar):
             'keyword': (_('Keyword Search'), '#cccccc', '#eeeeee'),
             'revset':  (_('Revision Set'),   '#f6dd82', '#fcf1ca'),
             }[qtype]
-
         if self._isUnsavedQuery():
             name += ' ' + _('(unsaved)')
-
         label = self._revsettypelabel
         label.setText(name)
 

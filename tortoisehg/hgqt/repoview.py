@@ -108,8 +108,11 @@ class HgRepoView(QTableView):
         header.sectionMoved.connect(self._saveColumnSettings)
 
         self.createActions()
-        # Set delegate for all columns to apply selection background workaround
-        self.setItemDelegate(SelectionWorkaroundDelegate(self))
+        
+        if THEME.enabled:
+            # Set delegate for all columns to apply selection background workaround
+            self.setItemDelegate(SelectionWorkaroundDelegate(self))
+            
         self.setItemDelegateForColumn(repomodel.GraphColumn,
                                       GraphDelegate(self))
         self.setItemDelegateForColumn(repomodel.DescColumn,
@@ -814,7 +817,6 @@ class LabeledDelegate(SelectionWorkaroundDelegate):
             option.features |= QStyleOptionViewItem.ViewItemFeature.HasDecoration
 
     def paint(self, painter, option, index):
-
         super().paint(painter, option, index)
         labels = index.data(repomodel.LabelsRole)
         if not labels:

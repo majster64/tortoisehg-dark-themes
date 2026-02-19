@@ -625,6 +625,7 @@ class DiffBrowser(QFrame):
         self.sci.setMarginLineNumbers(1, False)
         self.sci.setMarginWidth(1, QFontMetrics(self.font()).horizontalAdvance('XX'))
         self.sci.setMarginSensitivity(1, True)
+        self.sci.marginClicked.connect(self.marginClicked)
 
         if THEME.enabled:
             # Dark theme colors for margin (line number / markers area)
@@ -641,8 +642,7 @@ class DiffBrowser(QFrame):
                                                    Qt.GlobalColor.gray, self)
             self._uncheckedpix = qtlib.getcheckboxpixmap(QStyle.StateFlag.State_Off,
                                                     Qt.GlobalColor.gray, self)
-            
-        self.sci.marginClicked.connect(self.marginClicked)
+
 
         self.selected = self.sci.markerDefine(self._checkedpix, -1)
  

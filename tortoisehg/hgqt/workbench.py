@@ -1,7 +1,6 @@
 # workbench.py - main TortoiseHg Window
 #
 # Copyright (C) 2007-2010 Logilab. All rights reserved.
-# Copyright (C) 2026 Peter Demcak <majster64@gmail.com> (dark theme)
 #
 # This software may be used and distributed according to the terms of the
 # GNU General Public License version 2 or any later version.
@@ -34,7 +33,6 @@ from .qtgui import (
     QShortcut,
     QSizePolicy,
     QToolBar,
-    QWidget
 )
 
 from mercurial import (
@@ -58,9 +56,6 @@ from . import (
 from .docklog import LogDockWidget
 from .reporegistry import RepoRegistryView
 from .settings import SettingsDialog
-
-from .theme import THEME
-
 
 class Workbench(QMainWindow):
     """hg repository viewer/browser application"""
