@@ -630,23 +630,22 @@ class DiffBrowser(QFrame):
             # Dark theme colors for margin (line number / markers area)
             self.sci.setMarginsBackgroundColor(THEME.backgroundLighter)
             self.sci.setMarginsForegroundColor(THEME.control_text)
+
+        if THEME.enabled and sys.platform == 'win32':
+            # Draw custom checkboxes for Windows: the margin is 12px wide on this platform
+            # Not needed for Linux, as the margin is 16px wide
+            self._checkedpix = self._create_checkbox_pixmap(True)
+            self._uncheckedpix = self._create_checkbox_pixmap(False)
+        else:
+            self._checkedpix = qtlib.getcheckboxpixmap(QStyle.StateFlag.State_On,
+                                                   Qt.GlobalColor.gray, self)
+            self._uncheckedpix = qtlib.getcheckboxpixmap(QStyle.StateFlag.State_Off,
+                                                    Qt.GlobalColor.gray, self)
             
         self.sci.marginClicked.connect(self.marginClicked)
 
-        self._checkedpix = qtlib.getcheckboxpixmap(QStyle.StateFlag.State_On,
-                                                   Qt.GlobalColor.gray, self)
         self.selected = self.sci.markerDefine(self._checkedpix, -1)
-
-        self._uncheckedpix = qtlib.getcheckboxpixmap(QStyle.StateFlag.State_Off,
-                                                     Qt.GlobalColor.gray, self)
-            
-        if THEME.enabled:
-            # Fix rendering of rectangle for checkbox
-            self._patch_checkbox_pixmap(self._checkedpix)
-            
-            if not  sys.platform.startswith('linux'):
-                self._patch_checkbox_pixmap(self._uncheckedpix)
-   
+ 
         self.unselected = self.sci.markerDefine(self._uncheckedpix, -1)
 
         self.vertical = self.sci.markerDefine(qsci.MarkerSymbol.VerticalLine, -1)
@@ -656,7 +655,7 @@ class DiffBrowser(QFrame):
 
         self.divider = self.sci.markerDefine(qsci.MarkerSymbol.Background, -1)
         self.selcolor = self.sci.markerDefine(qsci.MarkerSymbol.Background, -1)
-        self.sci.setMarkerBackgroundColor(QColor('#BBFFFF'), self.selcolor) # Initial colors (will be overridden by setLexer)
+        self.sci.setMarkerBackgroundColor(QColor('#BBFFFF'), self.selcolor)
         self.sci.setMarkerBackgroundColor(QColor('#AAAAAA'), self.divider)
         mask = (1 << self.selected) | (1 << self.unselected) | \
                (1 << self.vertical) | (1 << self.selcolor) | (1 << self.divider)
@@ -678,14 +677,30 @@ class DiffBrowser(QFrame):
 
         self.clearDisplay()
 
-    def _patch_checkbox_pixmap(self, pm):
+    def _create_checkbox_pixmap(self, checked):
+        """Create a small checkbox pixmap (12x16) with optional checkmark"""
+        pm = QPixmap(12, 16)
+        pm.fill(Qt.GlobalColor.transparent)
+        
         painter = QPainter(pm)
         painter.setRenderHint(qtlib.QtPainterRenderHint.Antialiasing, False)
-
-        painter.setPen(QPen(THEME.diff_text))
-        painter.drawRect(2, 0, pm.width() - 1 - 4, pm.height() - 1)
-
+        
+        # Draw rectangle for checkbox
+        color = THEME.diff_text
+        painter.setPen(QPen(color, 1))
+        painter.drawRect(0, 1, 11, 14)
+        
+        # Draw checkmark if checked
+        if checked:
+            painter.setPen(QPen(color, 2))
+            painter.setRenderHint(qtlib.QtPainterRenderHint.Antialiasing, True)
+            painter.drawLine(3, 8, 5, 12)
+            painter.drawLine(5, 12, 9, 4)
+            painter.setRenderHint(qtlib.QtPainterRenderHint.Antialiasing, False)
+        
         painter.end()
+        return pm
+
 
 
     def loadSettings(self, qs, prefix):
