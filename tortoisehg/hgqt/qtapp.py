@@ -23,6 +23,8 @@ from .qtcore import (
     QIODevice,
     QLibraryInfo,
     QObject,
+    QPoint,
+    QRect,
     QSettings,
     QSignalMapper,
     QSocketNotifier,
@@ -40,6 +42,11 @@ from .qtgui import (
     QDialog,
     QMainWindow,
     QFont,
+    QPainter,
+    QPalette,
+    QPen,
+    QProxyStyle,
+    QStyle,
     QWidget
 )
 from .qtnetwork import (
@@ -297,6 +304,275 @@ class ExceptionCatcher(QObject):
         def timerEvent(self, event):
             # nop for instant SIGINT handling
             pass
+
+def apply_dark_palette(app):
+    pal = QPalette()
+
+    # Basic colors
+    pal.setColor(qtlib.QtPaletteRole.Window, THEME.background)
+    pal.setColor(qtlib.QtPaletteRole.Base, THEME.background)
+    pal.setColor(qtlib.QtPaletteRole.AlternateBase, THEME.backgroundLighter)
+
+    pal.setColor(qtlib.QtPaletteRole.Text, THEME.text)
+    pal.setColor(qtlib.QtPaletteRole.WindowText, THEME.text)
+
+    pal.setColor(qtlib.QtPaletteRole.Mid, THEME.backgroundLighter)
+    pal.setColor(qtlib.QtPaletteRole.Dark, THEME.background)
+    pal.setColor(qtlib.QtPaletteRole.Light, THEME.backgroundLighter)
+
+    pal.setColor(qtlib.QtPaletteRole.Highlight, THEME.selection_background)
+    pal.setColor(qtlib.QtPaletteRole.HighlightedText, THEME.selection_text)
+
+    pal.setColor(qtlib.QtPaletteRole.Link, THEME.ui_info)
+    pal.setColor(qtlib.QtPaletteRole.LinkVisited, THEME.ui_info)
+
+    # Disabled text
+    pal.setColor(qtlib.QtPaletteGroup.Disabled, qtlib.QtPaletteRole.Text, THEME.text_disabled)
+
+    app.setPalette(pal)
+
+
+def build_dark_stylesheet(THEME):
+    c = THEME
+
+    return f"""
+    /* === Base widgets === */
+    QWidget {{
+        background-color: {c.control_background.name()};
+        color: {c.control_text.name()};
+    }}
+
+    QMainWindow, QDialog {{
+        background-color: {c.background.name()};
+    }}
+
+    /* === Text inputs & views === */
+    QTextEdit, QPlainTextEdit, QLineEdit,
+    QListView, QTreeView, QTableView {{
+        background-color: {c.background.name()};
+        color: {c.control_text.name()};
+        border: 1px solid {c.control_border.name()};
+        selection-background-color: {c.selection_background.name()};
+        selection-color: {c.selection_text.name()};
+    }}
+
+    QTreeView, QListView, QTableView {{
+        alternate-background-color: {c.backgroundLighter.name()};
+    }}
+
+    /* === Buttons === */
+    QPushButton {{
+        background-color: {c.background.name()};
+        color: {c.control_text.name()};
+        border: 1px solid {c.control_border.name()};
+        padding: 5px 10px;
+        border-radius: 2px;
+    }}
+
+    QPushButton:hover {{
+        background-color: {c.control_hover.name()};
+    }}
+
+    QPushButton:pressed {{
+        background-color: {c.control_pressed.name()};
+    }}
+
+    /* === Menus === */
+    QMenuBar, QMenu {{
+        background-color: {c.control_background.name()};
+        color: {c.control_text.name()};
+        border: 1px solid {c.control_border.name()};
+    }}
+
+    QMenu::item:selected {{
+        background-color: {c.control_pressed.name()};
+    }}
+
+    /* === Toolbars & statusbar === */
+    QToolBar {{
+        background-color: {c.control_background.name()};
+        border: 1px solid {c.control_border.name()};
+    }}
+
+    QStatusBar {{
+        background-color: {c.background.name()};
+        color: {c.control_text.name()};
+        border-top: 1px solid #2d2d2d;
+    }}
+
+    /* === Tabs === */
+    QTabWidget::pane {{
+        border: 1px solid {c.control_border.name()};
+        background-color: {c.background.name()};
+    }}
+
+    QTabBar::tab {{
+        background-color: {c.control_background.name()};
+        color: {c.control_text.name()};
+        border: 1px solid {c.control_border.name()};
+        padding: 5px;
+    }}
+
+    QTabBar::tab:selected {{
+        background-color: {c.control_border.name()};
+        color: {c.text_selection.name()};
+    }}
+
+    /* === ScrollBars === */
+    QScrollBar {{
+        background: {THEME.control_background.name()};
+        border: 1px solid {THEME.control_border.name()};
+    }}
+
+    QScrollBar:vertical {{
+        width: 18px;
+    }}
+
+    QScrollBar:horizontal {{
+        height: 18px;
+    }}
+
+    /* HANDLE */
+    QScrollBar::handle {{
+        background: {THEME.backgroundLighter.name()};
+        border: 1px solid {THEME.control_border.name()};
+        border-radius: 6px;
+        margin: 0px; /* critical: avoid dead zones */
+    }}
+
+    QScrollBar::handle:vertical {{
+        min-height: 34px;
+    }}
+
+    QScrollBar::handle:horizontal {{
+        min-width: 34px;
+    }}
+
+    /* HOVER */
+    QScrollBar::handle:hover {{
+        background: {THEME.control_hover.name()};
+    }}
+
+    /* PRESSED / DRAGGING */
+    QScrollBar::handle:pressed,
+    QScrollBar::handle:active,
+    QScrollBar::handle:active:pressed,
+    QScrollBar::handle:vertical:pressed,
+    QScrollBar::handle:vertical:active,
+    QScrollBar::handle:horizontal:pressed,
+    QScrollBar::handle:horizontal:active {{
+        background: {THEME.control_pressed.name()};
+    }}
+
+    /* REMOVE INVISIBLE HIT AREAS */
+    QScrollBar::add-line,
+    QScrollBar::sub-line {{
+        background: none;
+        border: none;
+        width: 0px;
+        height: 0px;
+    }}
+
+    /* REMOVE PAGE AREAS */
+    QScrollBar::add-page,
+    QScrollBar::sub-page {{
+        background: none;
+    }}
+
+
+    /* === Header views === */
+    QHeaderView {{
+        background-color: {c.background.name()};
+    }}
+
+    QHeaderView::section {{
+        background-color: {c.backgroundLighter.name()};
+        color: {c.header_text.name()};
+        padding: 4px 6px;
+        border: 1px solid {c.control_border.name()};
+        font-size: 9pt;
+    }}
+
+    /* === Tooltips === */
+    QToolTip {{
+        background-color: {c.backgroundLighter.name()};
+        color: {c.text.name()};
+        border: 1px solid {c.control_border.name()};
+    }}
+    """
+
+
+class DarkItemViewCheckStyle(QProxyStyle):
+    def drawPrimitive(self, element, option, painter, widget=None):
+        if THEME.enabled and element == QStyle.PrimitiveElement.PE_IndicatorItemViewItemCheck:
+            painter.save()
+            painter.setRenderHint(qtlib.QtPainterRenderHint.Antialiasing, False)
+
+            # Use a reliable rect for item-view checkbox
+            style = self.baseStyle()
+            rect = style.subElementRect(QStyle.SubElement.SE_ItemViewItemCheckIndicator, option, widget)
+            rect = rect.adjusted(2, 2, -2, -2)
+
+            state = option.state
+            is_checked = bool(state & QStyle.StateFlag.State_On)
+            is_partial = bool(state & QStyle.StateFlag.State_NoChange)
+            is_enabled = bool(state & QStyle.StateFlag.State_Enabled)
+
+            # Colors
+            border_color = THEME.text if is_enabled else THEME.text_disabled
+            mark_color = border_color
+
+            # Border (square)
+            pen = QPen(border_color)
+            pen.setWidth(1)
+            painter.setPen(pen)
+            painter.setBrush(Qt.BrushStyle.NoBrush)
+            painter.drawRect(rect)
+
+            # Checkmark / tristate
+            pen.setWidth(2)
+            painter.setPen(pen)
+
+            # Shift checkmark by +1px right and +1px down
+            dx = 1
+            dy = 1
+
+            # Enable antialiasing
+            painter.setRenderHint(qtlib.QtPainterRenderHint.Antialiasing, True)
+
+            if is_checked:
+                # Classic checkmark
+                p1 = QPoint(rect.left() + 2 + dx, rect.center().y() + 1 + dy)
+                p2 = QPoint(rect.center().x() - 1 + dx, rect.bottom() - 2 + dy)
+                p3 = QPoint(rect.right() - 2 + dx, rect.top() + 2 + dy)
+                painter.drawLine(p1, p2)
+                painter.drawLine(p2, p3)
+
+            elif is_partial:
+                # Small centered square
+                size = 7
+                cx = rect.center().x()
+                cy = rect.center().y()
+                half = size // 2
+                square = QRect(cx - half + dx, cy - half + dy, size, size)
+                painter.setPen(Qt.PenStyle.NoPen)
+                painter.setBrush(mark_color)
+                painter.drawRect(square)
+                painter.setRenderHint(qtlib.QtPainterRenderHint.Antialiasing, False)
+
+            painter.restore()
+            return  # stop Qt from drawing anything else
+
+        super().drawPrimitive(element, option, painter, widget)
+
+    def subElementRect(self, element, option, widget=None):
+        rect = super().subElementRect(element, option, widget)
+        if THEME.enabled and element == QStyle.SubElement.SE_ItemViewItemCheckIndicator:
+            # Fusion style returns a smaller hit rect than Windows style;
+            # expand it back so clicks register anywhere on the visible indicator
+            rect = rect.adjusted(-1, -1, 1, 1)
+        return rect
+
 
 def is_windows_11():
     if sys.platform != 'win32':
@@ -623,10 +899,10 @@ class QtRunner(QObject):
         self._mainapp = QApplication(sys.argv)
 
         if THEME.enabled:
-            workbench.apply_dark_palette(self._mainapp)
+            apply_dark_palette(self._mainapp)
             base = self._mainapp.setStyle("Fusion") # Needed for comboboxes and checkboxes
-            self._mainapp.setStyle(workbench.DarkItemViewCheckStyle(base)) # Custom checkbox style for HgFileListView
-            self._mainapp.setStyleSheet(workbench.build_dark_stylesheet(THEME))
+            self._mainapp.setStyle(DarkItemViewCheckStyle(base))  # Custom checkbox style for HgFileListView
+            self._mainapp.setStyleSheet(build_dark_stylesheet(THEME))
             if sys.platform == 'win32':
                 self._dark_titlebar_filter = DarkTitleBarFilter()
                 self._mainapp.installEventFilter(self._dark_titlebar_filter)
