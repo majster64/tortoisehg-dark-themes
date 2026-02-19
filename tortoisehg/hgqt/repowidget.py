@@ -262,21 +262,6 @@ class RepoWidget(QWidget):
             repo = self._repoagent.rawRepo()
             qtlib.configstyles(repo.ui)
 
-            app = QApplication.instance()
-            if app is not None:
-                pal = app.palette()
-
-                pal.setColor(QPalette.ColorRole.Text, THEME.control_text)
-                pal.setColor(QPalette.ColorRole.WindowText, THEME.control_text)
-
-                pal.setColor(QPalette.ColorRole.Highlight, THEME.selection_background)
-                pal.setColor(QPalette.ColorRole.HighlightedText, THEME.selection_text)
-
-                pal.setColor(QPalette.ColorRole.Link, THEME.ui_info)
-
-                app.setPalette(pal)
-
-
         self._updateNamedActions()
         QTimer.singleShot(0, self._initView)
 

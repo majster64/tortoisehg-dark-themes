@@ -622,10 +622,14 @@ class QtRunner(QObject):
 
         self._mainapp = QApplication(sys.argv)
 
-        if THEME.enabled and sys.platform == 'win32':
-            app = QApplication.instance()
-            self._dark_titlebar_filter = DarkTitleBarFilter()
-            app.installEventFilter(self._dark_titlebar_filter)
+        if THEME.enabled:
+            workbench.apply_dark_palette(self._mainapp)
+            base = self._mainapp.setStyle("Fusion") # Needed for comboboxes and checkboxes
+            self._mainapp.setStyle(workbench.DarkItemViewCheckStyle(base)) # Custom checkbox style for HgFileListView
+            self._mainapp.setStyleSheet(workbench.build_dark_stylesheet(THEME))
+            if sys.platform == 'win32':
+                self._dark_titlebar_filter = DarkTitleBarFilter()
+                self._mainapp.installEventFilter(self._dark_titlebar_filter)
 
         self._exccatcher = ExceptionCatcher(ui, self._mainapp, self)
         self._gc = GarbageCollector(ui, self)

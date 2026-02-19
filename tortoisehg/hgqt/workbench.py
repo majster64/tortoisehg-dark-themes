@@ -89,6 +89,9 @@ def apply_dark_palette(app):
     pal.setColor(qtlib.QtPaletteRole.Highlight, THEME.selection_background)
     pal.setColor(qtlib.QtPaletteRole.HighlightedText, THEME.selection_text)
 
+    pal.setColor(qtlib.QtPaletteRole.Link, THEME.ui_info)
+    pal.setColor(qtlib.QtPaletteRole.LinkVisited, THEME.ui_info)
+
     # Disabled text
     pal.setColor(qtlib.QtPaletteGroup.Disabled, qtlib.QtPaletteRole.Text, THEME.text_disabled)
 
@@ -347,15 +350,6 @@ class Workbench(QMainWindow):
         self._repomanager.configChanged.connect(self._setupUrlComboIfCurrent)
 
         self.setupUi()
-
-        if THEME.enabled:
-           # Apply dark mode stylesheet
-           app = QApplication.instance()
-           apply_dark_palette(app)
-
-           base = app.setStyle("Fusion") # Needed for scrollbars
-           app.setStyle(DarkItemViewCheckStyle(base)) # Custom checkbox style for HgFileListView
-           app.setStyleSheet(build_dark_stylesheet(THEME))
 
         repomanager.busyChanged.connect(self._onBusyChanged)
         repomanager.progressReceived.connect(self.statusbar.setRepoProgress)

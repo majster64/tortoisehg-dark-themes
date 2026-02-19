@@ -214,6 +214,8 @@ else:  # PyQt5
         Light = _QPalette.Light
         Highlight = _QPalette.Highlight
         HighlightedText = _QPalette.HighlightedText
+        Link = _QPalette.Link
+        LinkVisited = _QPalette.LinkVisited
     
     class QtPaletteGroup(IntEnum):
         Active = _QPalette.Active
