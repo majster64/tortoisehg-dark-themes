@@ -110,6 +110,8 @@ class HgRepoView(QTableView):
         self.createActions()
         
         if THEME.enabled:
+            header.setDefaultAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
+
             # Set delegate for all columns to apply selection background workaround
             self.setItemDelegate(SelectionWorkaroundDelegate(self))
             

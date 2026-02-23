@@ -488,7 +488,7 @@ def build_dark_stylesheet(THEME):
     QHeaderView::section {{
         background-color: {c.backgroundLighter.name()};
         color: {c.header_text.name()};
-        padding: 4px 6px;
+        padding: 2px 6px;
         border: 1px solid {c.control_border.name()};
         font-size: 9pt;
     }}
