@@ -40,6 +40,7 @@ from .qtcore import (
     pyqtSlot,
 )
 from .qtgui import (
+    QAbstractItemView,
     QAction,
     QApplication,
     QComboBox,
@@ -63,6 +64,7 @@ from .qtgui import (
     QPalette,
     QPixmap,
     QPushButton,
+    QScrollBar,
     QShortcut,
     QSizePolicy,
     QStyle,
@@ -1941,3 +1943,108 @@ def qMouseEventPosition(event: QMouseEvent) -> QPoint:
         return event.position().toPoint()  # pytype: disable=attribute-error
     else:
         return event.pos()  # pytype: disable=attribute-error
+
+
+class CustomScrollBar(QScrollBar):
+    """Work around a Qt stylesheet bug where a large scrollbar could create a dead zone
+    that prevented scrolling to the bottom.
+    The issue is caused by the `Scrollbar::handle` style parameter.
+    Also fixes smooth scrolling for the MessageEntry widget.
+    """
+
+    def __init__(self, orientation, parent=None):
+        super().__init__(orientation, parent)
+        self._grab_offset = None
+        self._grab_value = None
+
+    def _isVertical(self):
+        return self.orientation() == Qt.Orientation.Vertical
+
+    def _posFromEvent(self, event):
+        return event.pos().y() if self._isVertical() else event.pos().x()
+
+    def mousePressEvent(self, event):
+        if self.maximum() > self.minimum():
+            self._grab_offset = self._posFromEvent(event)
+            self._grab_value = self.value()
+        super().mousePressEvent(event)
+
+    def mouseMoveEvent(self, event):
+        rng = self.maximum() - self.minimum()
+        if self.isSliderDown() and rng > 0 and self._grab_offset is not None:
+            track = self.height() if self._isVertical() else self.width()
+            if track > 0:
+                delta = self._posFromEvent(event) - self._grab_offset
+                value = self._grab_value + (rng + self.pageStep()) * delta / track
+                self.setSliderPosition(
+                    max(self.minimum(), min(self.maximum(), round(value))))
+            return
+        super().mouseMoveEvent(event)
+
+    def mouseReleaseEvent(self, event):
+        self._grab_offset = None
+        self._grab_value = None
+        super().mouseReleaseEvent(event)
+
+
+def _connectScintillaScrollBar(sci, bar, vertical=True):
+    """Sync a replacement scrollbar (vertical or horizontal) with QsciScintilla.
+
+    QsciScintillaBase caches the original scrollbar pointer, so the
+    replacement never gets range updates automatically.  We hook
+    SCN_UPDATEUI + textChanged to push range/position into the new bar,
+    and valueChanged to push the bar position back into Scintilla.
+    """
+    _syncing = [False]
+
+    def _sync():
+        if _syncing[0]:
+            return
+        if vertical:
+            total = sci.SendScintilla(sci.SCI_VISIBLEFROMDOCLINE,
+                                      sci.SendScintilla(sci.SCI_GETLINECOUNT))
+            visible = sci.SendScintilla(sci.SCI_LINESONSCREEN)
+            step, pos_msg = 1, sci.SCI_GETFIRSTVISIBLELINE
+        else:
+            total = sci.SendScintilla(sci.SCI_GETSCROLLWIDTH)
+            visible = sci.viewport().width()
+            step, pos_msg = 20, sci.SCI_GETXOFFSET
+        if visible <= 0:
+            return
+        _syncing[0] = True
+        bar.setRange(0, max(0, total - visible))
+        bar.setPageStep(max(1, visible))
+        bar.setSingleStep(step)
+        bar.setValue(sci.SendScintilla(pos_msg))
+        _syncing[0] = False
+
+    def _onBarChanged(val):
+        if not _syncing[0]:
+            _syncing[0] = True
+            msg = sci.SCI_SETFIRSTVISIBLELINE if vertical else sci.SCI_SETXOFFSET
+            sci.SendScintilla(msg, val)
+            _syncing[0] = False
+
+    bar.valueChanged.connect(_onBarChanged)
+    sci.SCN_UPDATEUI.connect(lambda *_: _sync())
+    sci.textChanged.connect(_sync)
+    from .qtcore import QTimer
+    QTimer.singleShot(0, _sync)
+
+
+def applyCustomScrollBars(widget):
+
+    # Replace default scrollbars with custom ones
+    vbar = CustomScrollBar(Qt.Orientation.Vertical)
+    hbar = CustomScrollBar(Qt.Orientation.Horizontal)
+    widget.setVerticalScrollBar(vbar)
+    widget.setHorizontalScrollBar(hbar)
+
+    if isinstance(widget, QAbstractItemView):
+        # Reconnect valueChanged signals to preserve lazy-loading (fetchMore) behavior for RepoView.
+        vbar.valueChanged.connect(widget.verticalScrollbarValueChanged)
+        hbar.valueChanged.connect(widget.horizontalScrollbarValueChanged)
+    elif hasattr(widget, 'SendScintilla'):
+        # Set up bidirectional sync: push Scintilla range/position to bar, and bar changes back to Scintilla
+        _connectScintillaScrollBar(widget, vbar, vertical=True)
+        _connectScintillaScrollBar(widget, hbar, vertical=False)

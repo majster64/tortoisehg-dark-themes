@@ -632,6 +632,8 @@ class DiffBrowser(QFrame):
             self.sci.setMarginsBackgroundColor(THEME.backgroundLighter)
             self.sci.setMarginsForegroundColor(THEME.control_text)
 
+            qtlib.applyCustomScrollBars(self.sci)
+
         if THEME.enabled and sys.platform == 'win32':
             # Draw custom checkboxes for Windows: the margin is 12px wide on this platform
             # Not needed for Linux, as the margin is 16px wide

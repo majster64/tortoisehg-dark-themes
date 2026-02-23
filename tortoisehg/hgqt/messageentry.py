@@ -75,6 +75,9 @@ class MessageEntry(qscilib.Scintilla):
         self._re_boundary = re.compile(r'[0-9i#]+\.|\(?[0-9i#]+\)|\(@\)')
 
         if THEME.enabled:
+
+            qtlib.applyCustomScrollBars(self)
+            
             # Base editor colors
             self.setPaper(THEME.background)
             self.setColor(THEME.text)

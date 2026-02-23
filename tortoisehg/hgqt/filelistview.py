@@ -97,6 +97,7 @@ class HgFileListView(QTreeView):
 
         if THEME.enabled:
             self.setItemDelegate(PreserveStatusColorDelegate(self))
+            qtlib.applyCustomScrollBars(self)
 
     def _model(self) -> manifestmodel.ManifestModel:
         model = self.model()

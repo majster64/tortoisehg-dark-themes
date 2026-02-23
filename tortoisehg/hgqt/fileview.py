@@ -185,6 +185,8 @@ class HgFileView(QFrame):
             self.sci.setWhitespaceBackgroundColor(THEME.background)
             self.sci.setWhitespaceForegroundColor(THEME.text_margin)
 
+            qtlib.applyCustomScrollBars(self.sci)
+
         hbox.addWidget(self.blk)
         hbox.addWidget(self.sci, 1)
         hbox.addWidget(self.blksearch)

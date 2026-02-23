@@ -139,6 +139,9 @@ class HgRepoView(QTableView):
         if repoagent.configBool('tortoisehg', 'copy_hash_selection'):
             self.clicked.connect(self._copyHashToSelection)
 
+        if THEME.enabled:
+            qtlib.applyCustomScrollBars(self)
+
     @property
     def repo(self):
         return self._repoagent.rawRepo()
