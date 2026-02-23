@@ -106,6 +106,17 @@ BUILTIN_THEMES = {
             'config_scrollbar': QColor('#4c566a'),     # mercurial.ini editor
             'titlebar_background': QColor('#252526'), # Windows 11 title bar
             'titlebar_text': QColor('#d4d4d4'),
+
+            # Syntax highlighting
+            'syntax_default': QColor('#A0AA82'),
+            'syntax_keyword': QColor('#8080FF'),
+            'syntax_function': QColor('#80FFFF'),
+            'syntax_class': QColor("#fa7304"),
+            'syntax_number': QColor('#FFB86C'),
+            'syntax_string': QColor('#E98D8D'),
+            'syntax_comment': QColor("#608B4E"),
+            'syntax_operator': QColor("#569CD6"),
+            'syntax_identifier': QColor("#DBCE12"),
         },
     },
 
@@ -173,6 +184,17 @@ BUILTIN_THEMES = {
             'config_scrollbar': QColor('#4c566a'),
             'titlebar_background': QColor('#252526'),
             'titlebar_text': QColor('#d4d4d4'),
+
+            # Syntax highlighting
+            'syntax_default': QColor('#A0AA82'),
+            'syntax_keyword': QColor('#8080FF'),
+            'syntax_function': QColor('#80FFFF'),
+            'syntax_class': QColor("#fa7304"),
+            'syntax_number': QColor('#FFB86C'),
+            'syntax_string': QColor('#E98D8D'),
+            'syntax_comment': QColor("#608B4E"),
+            'syntax_operator': QColor("#569CD6"),
+            'syntax_identifier': QColor("#DBCE12"),
         },
     },
 
@@ -239,6 +261,17 @@ BUILTIN_THEMES = {
             'config_scrollbar': QColor('#4c566a'),
             'titlebar_background': QColor('#282A36'),
             'titlebar_text': QColor('#F8F8F2'),
+
+            # Syntax highlighting
+            'syntax_default': QColor('#A0AA82'),
+            'syntax_keyword': QColor('#8080FF'),
+            'syntax_function': QColor('#80FFFF'),
+            'syntax_class': QColor("#fa7304"),
+            'syntax_number': QColor('#FFB86C'),
+            'syntax_string': QColor('#E98D8D'),
+            'syntax_comment': QColor("#608B4E"),
+            'syntax_operator': QColor("#569CD6"),
+            'syntax_identifier': QColor("#DBCE12"),
         },
     },
 
@@ -306,6 +339,17 @@ BUILTIN_THEMES = {
             'config_scrollbar': QColor('#4c566a'),
             'titlebar_background': QColor('#2E3440'),
             'titlebar_text': QColor('#ECEFF4'),
+
+            # Syntax highlighting
+            'syntax_default': QColor('#A0AA82'),
+            'syntax_keyword': QColor('#8080FF'),
+            'syntax_function': QColor('#80FFFF'),
+            'syntax_class': QColor("#fa7304"),
+            'syntax_number': QColor('#FFB86C'),
+            'syntax_string': QColor('#E98D8D'),
+            'syntax_comment': QColor("#608B4E"),
+            'syntax_operator': QColor("#569CD6"),
+            'syntax_identifier': QColor("#DBCE12"),
         },
     },
 
@@ -373,6 +417,17 @@ BUILTIN_THEMES = {
             'config_scrollbar': QColor('#4c566a'),
             'titlebar_background': QColor('#282828'),
             'titlebar_text': QColor('#EBDBB2'),
+
+            # Syntax highlighting
+            'syntax_default': QColor('#A0AA82'),
+            'syntax_keyword': QColor('#8080FF'),
+            'syntax_function': QColor('#80FFFF'),
+            'syntax_class': QColor("#fa7304"),
+            'syntax_number': QColor('#FFB86C'),
+            'syntax_string': QColor('#E98D8D'),
+            'syntax_comment': QColor("#608B4E"),
+            'syntax_operator': QColor("#569CD6"),
+            'syntax_identifier': QColor("#DBCE12"),
         },
     },
 
@@ -440,6 +495,17 @@ BUILTIN_THEMES = {
             'config_scrollbar': QColor('#4c566a'),
             'titlebar_background': QColor('#282C34'),
             'titlebar_text': QColor('#ABB2BF'),
+
+            # Syntax highlighting
+            'syntax_default': QColor('#A0AA82'),
+            'syntax_keyword': QColor('#8080FF'),
+            'syntax_function': QColor('#80FFFF'),
+            'syntax_class': QColor("#fa7304"),
+            'syntax_number': QColor('#FFB86C'),
+            'syntax_string': QColor('#E98D8D'),
+            'syntax_comment': QColor("#608B4E"),
+            'syntax_operator': QColor("#569CD6"),
+            'syntax_identifier': QColor("#DBCE12"),
         },
     },
 }

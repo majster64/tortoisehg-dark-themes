@@ -806,18 +806,6 @@ class _AbstractViewControl(QObject):
 
         sci.setCaretForegroundColor(THEME.caret_foreground)
 
-        # set colors for lexer
-        lexer = sci.lexer()
-        if lexer:
-            fg = THEME.text
-            lexer.setDefaultColor(fg)
-
-            if hasattr(lexer, 'Operator'):
-                lexer.setColor(fg, lexer.Operator)
-
-            for style in (1, 2, 10, 11):
-                lexer.setColor(fg, style)
-
 _diffHeaderRegExp = re.compile(r"^@@ -[0-9]+,[0-9]+ \+[0-9]+,[0-9]+ @@")
 
 class _DiffViewControl(_AbstractViewControl):

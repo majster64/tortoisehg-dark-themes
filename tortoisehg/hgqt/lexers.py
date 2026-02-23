@@ -45,6 +45,61 @@ else:
     def _fixdarkcolors(lexer):
         pass
 
+def _applyThemeSyntaxColors(lexer):
+    """Apply theme syntax colors to a lexer (generic implementation for all languages)
+    """
+    if not THEME.enabled:
+        return
+
+    # Only indices that are consistent across virtually all QScintilla lexers.
+    style_map = {
+        0: THEME.syntax_default,   # Default  (always 0)
+        1: THEME.syntax_comment,   # Comment  (always 1 for most lexers)
+    }
+
+    for style_idx, color in style_map.items():
+        try:
+            lexer.setColor(color, style_idx)
+        except:
+            pass
+
+    # Named style attributes - mapped to correct numeric values per lexer
+    named_styles = {
+        'Default':                  THEME.syntax_default,
+        'Identifier':               THEME.syntax_identifier,
+        'Comment':                  THEME.syntax_comment,
+        'CommentLine':              THEME.syntax_comment,
+        'CommentBlock':             THEME.syntax_comment,
+        'CommentDoc':               THEME.syntax_comment,
+        'CommentLineDoc':           THEME.syntax_comment,
+        'Keyword':                  THEME.syntax_keyword,
+        'KeywordSet2':              THEME.syntax_keyword,
+        'PreProcessor':             THEME.syntax_keyword,
+        'Number':                   THEME.syntax_number,
+        'Operator':                 THEME.syntax_operator,
+        'SingleQuotedString':       THEME.syntax_string,
+        'DoubleQuotedString':       THEME.syntax_string,
+        'RawString':                THEME.syntax_string,
+        'UnclosedString':           THEME.syntax_string,
+        'VerbatimString':           THEME.syntax_string,
+        'TripleSingleQuotedString': THEME.syntax_string,
+        'TripleDoubleQuotedString': THEME.syntax_string,
+        'HereDocument':             THEME.syntax_string,
+        'ClassName':                THEME.syntax_class,
+        'GlobalClass':              THEME.syntax_class,
+        'FunctionMethodName':       THEME.syntax_function,
+    }
+
+    for style_name, color in named_styles.items():
+        try:
+            style_attr = getattr(lexer.__class__, style_name, None)
+            if style_attr is not None:
+                lexer.setColor(color, style_attr)
+        except:
+            pass
+
+    return
+
 class _LexerSelector:
     _lexer = None
     def match(self, filename, filedata):
@@ -59,7 +114,11 @@ class _LexerSelector:
     def cfg_lexer(self, lexer):
         font = qtlib.getfont('fontlog').font()
         lexer.setFont(font, -1)
-        _fixdarkcolors(lexer)
+
+        if THEME.enabled:
+            _applyThemeSyntaxColors(lexer)
+        else:
+            _fixdarkcolors(lexer)
         return lexer
 
 class _FilenameLexerSelector(_LexerSelector):
