@@ -257,37 +257,34 @@ NODE_SHAPE_UNAPPLIEDPATCH = 3
 NODE_SHAPE_REVISION_DRAFT = 4
 NODE_SHAPE_REVISION_SECRET = 5
 
-# TODO: Remove these two when we adopt GTK author color scheme
-# Default (light theme) branch / graph colors
-LIGHT_COLORS = [
-    '#0000ff',  # blue
-    '#006400',  # dark green
-    '#008000',  # green
-    '#00008b',  # dark blue
-    '#800080',  # purple
-    '#1e90ff',  # dodger blue
-    '#808000',  # dark yellow
-    '#ff00ff',  # magenta
-    '#8b008b',  # dark magenta
-    '#008b8b',  # dark cyan
-]
-
-# Dark-theme branch / graph colors
-DARK_COLORS = [
-    '#3a5dc4',  # dark blue
-    '#14532d',  # dark green
-    '#166534',  # green (darkened)
-    '#1e3a8a',  # dark blue
-    '#4c1d95',  # purple
-    '#1e40af',  # dodger blue (dark)
-    '#5f5a1a',  # dark yellow / olive
-    '#86198f',  # magenta (dark)
-    '#5b1366',  # dark magenta
-    '#155e75',  # dark cyan
-]
-
-# Public API (used elsewhere)
-COLORS = DARK_COLORS if THEME.enabled else LIGHT_COLORS
+if THEME.enabled:
+    # Dark-theme branch / graph colors
+    COLORS = [
+        '#3a5dc4',  # dark blue
+        '#14532d',  # dark green
+        '#166534',  # green (darkened)
+        '#1e3a8a',  # dark blue
+        '#4c1d95',  # purple
+        '#1e40af',  # dodger blue (dark)
+        '#5f5a1a',  # dark yellow / olive
+        '#86198f',  # magenta (dark)
+        '#5b1366',  # dark magenta
+        '#155e75',  # dark cyan
+    ]
+else:
+    # TODO: Remove these two when we adopt GTK author color scheme
+    COLORS = [
+        '#0000ff',  # blue
+        '#006400',  # dark green
+        '#008000',  # green
+        '#00008b',  # dark blue
+        '#800080',  # purple
+        '#1e90ff',  # dodger blue
+        '#808000',  # dark yellow
+        '#ff00ff',  # magenta
+        '#8b008b',  # dark magenta
+        '#008b8b',  # dark cyan
+    ]
 
 def hashcolor(data, modulo=None):
     """function to reliably map a string to a color index
