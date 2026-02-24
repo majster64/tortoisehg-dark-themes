@@ -259,6 +259,7 @@ class RepoWidget(QWidget):
         repoagent.configChanged.connect(self.configChanged)
         
         if THEME.enabled:
+            # Load color styles (dark palette) into the global _styles table
             repo = self._repoagent.rawRepo()
             qtlib.configstyles(repo.ui)
 

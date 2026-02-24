@@ -761,21 +761,6 @@ class _AbstractViewControl(QObject):
         assert p is None or isinstance(p, QWidget)
         return p
 
-    def _forceDarkViewport(self):
-        sci = self._sci
-
-        # Kill edge column
-        sci.setEdgeMode(qsci.EdgeNone)
-        sci.setEdgeColumn(0)
-
-        # Force dark viewport background
-        vp = sci.viewport()
-        vp.setAutoFillBackground(True)
-
-        pal = vp.palette()
-        pal.setColor(qtlib.QtPaletteRole.Window, THEME.background)
-        vp.setPalette(pal)
-
     def _forceDarkViewportLater(self):
         if not THEME.enabled:
             return
