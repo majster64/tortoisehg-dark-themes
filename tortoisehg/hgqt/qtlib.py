@@ -277,6 +277,10 @@ else:  # PyQt5
     class QtPainterCompositionMode(IntEnum):
         CompositionMode_SourceOver = _QPainter.CompositionMode_SourceOver
 
+def stateValue(state):
+    """Extract raw int from a QStyle.StateFlag (works on both PyQt5 and PyQt6)."""
+    return state.value if hasattr(state, 'value') else int(state)
+
 _W = TypeVar('_W', bound=QWidget)
 
 # def htmlescape(s: Text, quote: bool = True) -> Text:

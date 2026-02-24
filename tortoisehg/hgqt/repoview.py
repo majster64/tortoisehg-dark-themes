@@ -550,8 +550,7 @@ class SelectionWorkaroundDelegate(QStyledItemDelegate):
 
     def paint(self, painter, option, index):
         if THEME.enabled:
-            option_state = option.state.value if hasattr(option.state, 'value') else option.state
-            if option_state & qtlib.QtStateFlag.State_Selected:
+            if qtlib.stateValue(option.state) & qtlib.QtStateFlag.State_Selected:
                 painter.fillRect(option.rect, THEME.selection_background)
         super().paint(painter, option, index)
 

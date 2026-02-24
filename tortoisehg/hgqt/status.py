@@ -794,8 +794,7 @@ class WctxPreserveStatusColorDelegate(QStyledItemDelegate):
         opt = QStyleOptionViewItem(option)
         self.initStyleOption(opt, index)
 
-        opt_state = opt.state.value if hasattr(opt.state, 'value') else opt.state
-        if opt_state & qtlib.QtStateFlag.State_Selected:
+        if qtlib.stateValue(opt.state) & qtlib.QtStateFlag.State_Selected:
             fg = index.data(qtlib.QtItemDataRole.ForegroundRole)
             if isinstance(fg, QBrush):
                 brush = fg
@@ -820,8 +819,7 @@ class WctxFileTree(QTreeView):
 
     
     def drawRow(self, painter, option, index):
-        option_state = option.state.value if hasattr(option.state, 'value') else option.state
-        if option_state & qtlib.QtStateFlag.State_Selected:
+        if qtlib.stateValue(option.state) & qtlib.QtStateFlag.State_Selected:
             opt = QStyleOptionViewItem(option)
 
             # get per-item foreground color (status color)

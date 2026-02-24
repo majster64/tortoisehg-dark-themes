@@ -60,8 +60,7 @@ class PreserveStatusColorDelegate(QStyledItemDelegate):
         opt = QStyleOptionViewItem(option)
         self.initStyleOption(opt, index)
 
-        opt_state = opt.state.value if hasattr(opt.state, 'value') else opt.state
-        if opt_state & qtlib.QtStateFlag.State_Selected:
+        if qtlib.stateValue(opt.state) & qtlib.QtStateFlag.State_Selected:
             # preserve per-item foreground color
             fg = index.data(qtlib.QtItemDataRole.ForegroundRole)
             if isinstance(fg, QBrush):
