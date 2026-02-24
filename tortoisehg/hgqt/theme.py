@@ -108,7 +108,7 @@ BUILTIN_THEMES = {
             'titlebar_text': QColor('#d4d4d4'),
 
             # Syntax highlighting
-            'syntax_default': QColor('#A0AA82'),
+            'syntax_default': QColor('#A6AA82'),
             'syntax_keyword': QColor('#8080FF'),
             'syntax_function': QColor('#80FFFF'),
             'syntax_class': QColor("#fa7304"),
@@ -116,7 +116,7 @@ BUILTIN_THEMES = {
             'syntax_string': QColor('#E98D8D'),
             'syntax_comment': QColor("#608B4E"),
             'syntax_operator': QColor("#569CD6"),
-            'syntax_identifier': QColor("#DBCE12"),
+            'syntax_identifier': QColor("#A6AA82"),
         },
     },
 
@@ -186,7 +186,7 @@ BUILTIN_THEMES = {
             'titlebar_text': QColor('#d4d4d4'),
 
             # Syntax highlighting
-            'syntax_default': QColor('#A0AA82'),
+            'syntax_default': QColor('#CCCCCC'),
             'syntax_keyword': QColor('#8080FF'),
             'syntax_function': QColor('#80FFFF'),
             'syntax_class': QColor("#fa7304"),
@@ -194,7 +194,7 @@ BUILTIN_THEMES = {
             'syntax_string': QColor('#E98D8D'),
             'syntax_comment': QColor("#608B4E"),
             'syntax_operator': QColor("#569CD6"),
-            'syntax_identifier': QColor("#DBCE12"),
+            'syntax_identifier': QColor("#CCCCCC"),
         },
     },
 
@@ -235,7 +235,7 @@ BUILTIN_THEMES = {
             'control_background': QColor('#343746'),
             'control_hover': QColor('#44475A'),
             'control_pressed': QColor('#6272A4'),
-            'control_border': QColor('#44475A'),
+            'control_border': QColor("#545977"),
             'control_text': QColor('#F8F8F2'),
             'header_background': QColor('#343746'),
             'header_text': QColor('#F8F8F2'),
@@ -263,7 +263,7 @@ BUILTIN_THEMES = {
             'titlebar_text': QColor('#F8F8F2'),
 
             # Syntax highlighting
-            'syntax_default': QColor('#A0AA82'),
+            'syntax_default': QColor('#F8F8F2'),
             'syntax_keyword': QColor('#8080FF'),
             'syntax_function': QColor('#80FFFF'),
             'syntax_class': QColor("#fa7304"),
@@ -271,7 +271,7 @@ BUILTIN_THEMES = {
             'syntax_string': QColor('#E98D8D'),
             'syntax_comment': QColor("#608B4E"),
             'syntax_operator': QColor("#569CD6"),
-            'syntax_identifier': QColor("#DBCE12"),
+            'syntax_identifier': QColor("#F8F8F2"),
         },
     },
 
@@ -312,7 +312,7 @@ BUILTIN_THEMES = {
             'control_background': QColor('#3B4252'),
             'control_hover': QColor('#4C566A'),
             'control_pressed': QColor('#5E81AC'),
-            'control_border': QColor('#4C566A'),
+            'control_border': QColor("#536079"),
             'control_text': QColor('#ECEFF4'),
             'header_background': QColor('#3B4252'),
             'header_text': QColor('#ECEFF4'),
@@ -341,7 +341,7 @@ BUILTIN_THEMES = {
             'titlebar_text': QColor('#ECEFF4'),
 
             # Syntax highlighting
-            'syntax_default': QColor('#A0AA82'),
+            'syntax_default': QColor('#D8DEE9'),
             'syntax_keyword': QColor('#8080FF'),
             'syntax_function': QColor('#80FFFF'),
             'syntax_class': QColor("#fa7304"),
@@ -349,7 +349,7 @@ BUILTIN_THEMES = {
             'syntax_string': QColor('#E98D8D'),
             'syntax_comment': QColor("#608B4E"),
             'syntax_operator': QColor("#569CD6"),
-            'syntax_identifier': QColor("#DBCE12"),
+            'syntax_identifier': QColor("#D8DEE9"),
         },
     },
 
@@ -389,7 +389,7 @@ BUILTIN_THEMES = {
             # --- Controls and UI feedback ---
             'control_background': QColor('#32302F'),
             'control_hover': QColor('#3C3836'),
-            'control_pressed': QColor('#504945'),
+            'control_pressed': QColor("#8B6D5D"),
             'control_border': QColor('#504945'),
             'control_text': QColor('#EBDBB2'),
             'header_background': QColor('#32302F'),
@@ -419,7 +419,7 @@ BUILTIN_THEMES = {
             'titlebar_text': QColor('#EBDBB2'),
 
             # Syntax highlighting
-            'syntax_default': QColor('#A0AA82'),
+            'syntax_default': QColor('#EBDBB2'),
             'syntax_keyword': QColor('#8080FF'),
             'syntax_function': QColor('#80FFFF'),
             'syntax_class': QColor("#fa7304"),
@@ -427,7 +427,7 @@ BUILTIN_THEMES = {
             'syntax_string': QColor('#E98D8D'),
             'syntax_comment': QColor("#608B4E"),
             'syntax_operator': QColor("#569CD6"),
-            'syntax_identifier': QColor("#DBCE12"),
+            'syntax_identifier': QColor("#EBDBB2"),
         },
     },
 
@@ -466,9 +466,9 @@ BUILTIN_THEMES = {
 
             # --- Controls and UI feedback ---
             'control_background': QColor('#2C313C'),
-            'control_hover': QColor('#3E4451'),
-            'control_pressed': QColor('#528BFF'),
-            'control_border': QColor('#3E4451'),
+            'control_hover': QColor("#4B5569"),
+            'control_pressed': QColor("#465677"),
+            'control_border': QColor("#444D61"),
             'control_text': QColor('#ABB2BF'),
             'header_background': QColor('#2C313C'),
             'header_text': QColor('#ABB2BF'),
@@ -497,7 +497,7 @@ BUILTIN_THEMES = {
             'titlebar_text': QColor('#ABB2BF'),
 
             # Syntax highlighting
-            'syntax_default': QColor('#A0AA82'),
+            'syntax_default': QColor('#ABB2BF'),
             'syntax_keyword': QColor('#8080FF'),
             'syntax_function': QColor('#80FFFF'),
             'syntax_class': QColor("#fa7304"),
@@ -505,12 +505,10 @@ BUILTIN_THEMES = {
             'syntax_string': QColor('#E98D8D'),
             'syntax_comment': QColor("#608B4E"),
             'syntax_operator': QColor("#569CD6"),
-            'syntax_identifier': QColor("#DBCE12"),
+            'syntax_identifier': QColor("#ABB2BF"),
         },
     },
 }
-
-
 
 # ----------------------------------------------------------------------
 # Derived constants
@@ -531,11 +529,10 @@ class ThemeColors:
     """
     Lightweight container for optional theme color overrides.
     """
-    __slots__ = ('enabled', 'saturation') + THEME_KEYS
+    __slots__ = ('enabled',) + THEME_KEYS
 
     def __init__(self, enabled: bool = False):
         self.enabled = enabled
-        self.saturation = 1.0
 
         for key in THEME_KEYS:
             setattr(self, key, None)
@@ -628,13 +625,6 @@ def load_theme_colors() -> ThemeColors:
 
     theme = ThemeColors(enabled=True)
 
-    # Base saturation
-    theme.saturation = float(base.get('saturation', 1.0))
-
-    # Overlay saturation if present
-    if overlay and 'saturation' in overlay:
-        theme.saturation = float(overlay.get('saturation', theme.saturation))
-
     # Start with full dark palette
     colors = base['colors'].copy()
 
@@ -647,16 +637,6 @@ def load_theme_colors() -> ThemeColors:
     for k, v in (ui.configitems(section) or []):
         key = pycompat.sysstr(k)
         val = pycompat.sysstr(v)
-
-        if key == 'saturation':
-            try:
-                s = float(val)
-            except ValueError:
-                continue
-
-            if 0.0 <= s <= 1.0:
-                theme.saturation = s
-            continue
 
         if key not in THEME_KEYS:
             continue
