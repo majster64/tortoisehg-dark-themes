@@ -606,8 +606,7 @@ def issuePluginVisible():
         return False
 
 def findThemes():
-    # UI strings (capitalized) are handled by SettingsCombo
-    return [name.capitalize() for name in theme.available_themes()]
+    return list(theme.available_themes())
 
 def findDiffTools():
     return sorted(hglib.tounicode(t) for t in hglib.difftools(hglib.loadui()))
