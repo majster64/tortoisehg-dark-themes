@@ -27,15 +27,7 @@ from .qtcore import (
 )
 from .qtgui import (
     QAbstractItemView,
-    QBrush,
-    QMessageBox,
-    QSizePolicy,
-    QStyle,
-    QStyleOptionViewItem,
-    QStyledItemDelegate,
     QTreeView,
-    QVBoxLayout,
-    QWidget,
 )
 
 from ..util import hglib
@@ -52,29 +44,11 @@ if typing.TYPE_CHECKING:
     from .qtcore import (
         QAbstractItemModel,
     )
+    from .qtgui import (
+        QWidget,
+    )
 
 from .theme import THEME
-
-class PreserveStatusColorDelegate(QStyledItemDelegate):
-    def paint(self, painter, option, index):
-        opt = QStyleOptionViewItem(option)
-        self.initStyleOption(opt, index)
-
-        if qtlib.stateValue(opt.state) & qtlib.QtStateFlag.State_Selected:
-            # preserve per-item foreground color
-            fg = index.data(qtlib.QtItemDataRole.ForegroundRole)
-            if isinstance(fg, QBrush):
-                brush = fg
-            elif fg is not None:
-                brush = QBrush(fg)
-            else:
-                brush = opt.palette.brush(qtlib.QtPaletteRole.Text)
-
-            # critical for keyboard selection
-            opt.palette.setBrush(qtlib.QtPaletteRole.HighlightedText, brush)
-            opt.palette.setBrush(qtlib.QtPaletteRole.Text, brush)
-
-        super().paint(painter, opt, index)
 
 class HgFileListView(QTreeView):
     """Display files and statuses between two revisions or patch"""
@@ -95,7 +69,6 @@ class HgFileListView(QTreeView):
         self.setUniformRowHeights(True)
 
         if THEME.enabled:
-            self.setItemDelegate(PreserveStatusColorDelegate(self))
             qtlib.applyCustomScrollBars(self)
 
     def _model(self) -> manifestmodel.ManifestModel:
