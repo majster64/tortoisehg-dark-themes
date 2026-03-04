@@ -546,7 +546,7 @@ class ConsoleWidget(QWidget, qtlib.TaskWidget):
 
     def _runextcommand(self, cmdline):
         self._extproc.setWorkingDirectory(self._workingDirectory())
-        self._extproc.start(cmdline, QIODevice.OpenModeFlag.ReadOnly)
+        self._extproc.start(cmdline, mode=QIODevice.OpenModeFlag.ReadOnly)
 
     def _cmd_hg(self, args):
         self.closePrompt()
