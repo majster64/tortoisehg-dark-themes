@@ -37,11 +37,7 @@ from . import (
     qscilib,
     qtlib,
 )
-
-from tortoisehg.hgqt import qsci
-Qsci = qsci.QsciScintilla
-
-from tortoisehg.hgqt.theme import THEME
+from .theme import THEME
 
 class MessageEntry(qscilib.Scintilla):
 
@@ -83,20 +79,20 @@ class MessageEntry(qscilib.Scintilla):
             self.setColor(THEME.text)
 
             # Force STYLE_DEFAULT
-            self.SendScintilla(Qsci.SCI_STYLESETBACK, Qsci.STYLE_DEFAULT, THEME.background)
-            self.SendScintilla(Qsci.SCI_STYLESETFORE, Qsci.STYLE_DEFAULT, THEME.text)
-            self.SendScintilla(Qsci.SCI_STYLECLEARALL)
+            self.SendScintilla(QsciScintilla.SCI_STYLESETBACK, QsciScintilla.STYLE_DEFAULT, THEME.background)
+            self.SendScintilla(QsciScintilla.SCI_STYLESETFORE, QsciScintilla.STYLE_DEFAULT, THEME.text)
+            self.SendScintilla(QsciScintilla.SCI_STYLECLEARALL)
 
             # Braces
-            self.setBraceMatching(Qsci.BraceMatch.SloppyBraceMatch)
+            self.setBraceMatching(QsciScintilla.BraceMatch.SloppyBraceMatch)
 
             # Bad brace
-            self.SendScintilla(Qsci.SCI_STYLESETBACK, Qsci.STYLE_BRACEBAD, THEME.brace_bad_bg)
-            self.SendScintilla(Qsci.SCI_STYLESETFORE, Qsci.STYLE_BRACEBAD, THEME.brace_bad_fg)
+            self.SendScintilla(QsciScintilla.SCI_STYLESETBACK, QsciScintilla.STYLE_BRACEBAD, THEME.brace_bad_bg)
+            self.SendScintilla(QsciScintilla.SCI_STYLESETFORE, QsciScintilla.STYLE_BRACEBAD, THEME.brace_bad_fg)
 
             # Matched braces
-            self.SendScintilla(Qsci.SCI_STYLESETBACK, Qsci.STYLE_BRACELIGHT, THEME.brace_match_bg)
-            self.SendScintilla(Qsci.SCI_STYLESETFORE, Qsci.STYLE_BRACELIGHT, THEME.brace_match_fg)
+            self.SendScintilla(QsciScintilla.SCI_STYLESETBACK, QsciScintilla.STYLE_BRACELIGHT, THEME.brace_match_bg)
+            self.SendScintilla(QsciScintilla.SCI_STYLESETFORE, QsciScintilla.STYLE_BRACELIGHT, THEME.brace_match_fg)
 
             # Selection
             self.setSelectionBackgroundColor(THEME.selection_background)
