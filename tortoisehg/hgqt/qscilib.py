@@ -866,7 +866,7 @@ def fileEditor(filename, **opts):
             lexer.setPaper(THEME.background, style)
             lexer.setColor(THEME.diff_text, style)
 
-        lexer.setColor(QColor(197, 134, 192), QsciLexerProperties.Section)
+        lexer.setColor(THEME.diff_start, QsciLexerProperties.Section)
 
         # Folding margin (visual container)
         editor.setMarginType(2, QsciScintilla.MarginType.SymbolMargin)
