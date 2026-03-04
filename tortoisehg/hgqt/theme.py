@@ -229,7 +229,7 @@ BUILTIN_THEMES = {
             'file_removed': QColor("#D84747"),
             'file_deleted': QColor("#D14747"),
             'file_missing': QColor("#D34545"),
-            'file_unknown': QColor('#8BE9FD'),
+            'file_unknown': QColor("#8F93A1"),
             'file_ignored': QColor('#6272A4'),
             'file_clean': QColor('#F8F8F2'),
 
@@ -281,12 +281,12 @@ BUILTIN_THEMES = {
         'colors': {
 
             # --- Core UI and text ---
-            'background': QColor('#2E3440'),
-            'backgroundLighter': QColor('#3B4252'),
+            'background': QColor("#282E38"),
+            'backgroundLighter': QColor("#323846"),
             'text': QColor('#D8DEE9'),
             'text_disabled': QColor('#616E88'),
-            'text_margin': QColor('#4C566A'),
-            'text_author': QColor('#4C566A'),
+            'text_margin': QColor("#6E81A7"),
+            'text_author': QColor("#6B7994"),
             'text_description': QColor('#D8DEE9'),
             'text_selection': QColor('#D8DEE9'),
             'selection_background': QColor('#434C5E'),
@@ -296,8 +296,8 @@ BUILTIN_THEMES = {
             # --- Diff and file status ---
             'diff_text': QColor('#D8DEE9'),
             'diff_start': QColor('#9FE3F2'),
-            'diff_added': QColor("#71ECD8"),
-            'diff_removed': QColor("#FA7A84"),
+            'diff_added': QColor("#68DA77"),
+            'diff_removed': QColor("#E75151"),
             'diff_selected': QColor("#212127"),
             'diff_excluded': QColor('#242424'),
             'file_modified': QColor('#6C8FB3'),
@@ -306,7 +306,7 @@ BUILTIN_THEMES = {
             'file_removed': QColor('#F07A82'),
             'file_deleted': QColor('#F07A82'),
             'file_missing': QColor('#F1D38A'),
-            'file_unknown': QColor('#5F748A'),
+            'file_unknown': QColor("#80909E"),
             'file_ignored': QColor('#4C566A'),
             'file_clean': QColor('#D8DEE9'),
 
@@ -327,9 +327,9 @@ BUILTIN_THEMES = {
             'success_background': QColor('#2f4f2f'),
 
             # --- Special and window elements ---
-            'chip_text': QColor('#EBDBB2'),
+            'chip_text': QColor("#BACDE7"),
             'chip_branch_background': QColor("#415080"),
-            'chip_tag_background': QColor("#725E38"),
+            'chip_tag_background': QColor("#386072"),
             'chip_bookmark_background': QColor('#9ADBCF'),
             'chip_curbookmark_background': QColor('#9FE3F2'),
             'chip_topic_background': QColor('#C39BD3'),
@@ -437,12 +437,12 @@ BUILTIN_THEMES = {
         'colors': {
 
             # --- Core UI and text ---
-            'background': QColor('#282C34'),
-            'backgroundLighter': QColor('#2C313C'),
-            'text': QColor('#ABB2BF'),
+            'background': QColor("#242529"),
+            'backgroundLighter': QColor("#323641"),
+            'text': QColor("#B5C3DF"),
             'text_disabled': QColor('#5C6370'),
-            'text_margin': QColor('#5C6370'),
-            'text_author': QColor('#5C6370'),
+            'text_margin': QColor("#5E6C86"),
+            'text_author': QColor("#717F9C"),
             'text_description': QColor('#ABB2BF'),
             'text_selection': QColor('#ABB2BF'),
             'selection_background': QColor('#3E4451'),
@@ -452,17 +452,17 @@ BUILTIN_THEMES = {
             # --- Diff and file status ---
             'diff_text': QColor('#ABB2BF'),
             'diff_start': QColor('#C678DD'),
-            'diff_added': QColor('#98C379'),
-            'diff_removed': QColor('#E06C75'),
-            'diff_selected': QColor("#212127"),
+            'diff_added': QColor("#46D369"),
+            'diff_removed': QColor("#E04C4C"),
+            'diff_selected': QColor("#141416"),
             'diff_excluded': QColor('#242424'),
-            'file_modified': QColor('#C678DD'),
+            'file_modified': QColor("#736EC0"),
             'file_resolved': QColor("#30AF50"),
             'file_added': QColor('#98C379'),
             'file_removed': QColor('#E06C75'),
             'file_deleted': QColor('#E06C75'),
-            'file_missing': QColor('#E06C75'),
-            'file_unknown': QColor('#56B6C2'),
+            'file_missing': QColor('#F1D38A'),
+            'file_unknown': QColor("#5F748A"),
             'file_ignored': QColor('#5C6370'),
             'file_clean': QColor('#ABB2BF'),
 
@@ -484,8 +484,8 @@ BUILTIN_THEMES = {
 
             # --- Special and window elements ---
             'chip_text': QColor('#E5E9F0'),
-            'chip_branch_background': QColor('#5A4E2D'),
-            'chip_tag_background': QColor("#9B7450"),
+            'chip_branch_background': QColor("#45467E"),
+            'chip_tag_background': QColor("#50799B"),
             'chip_bookmark_background': QColor('#98C379'),
             'chip_curbookmark_background': QColor('#C678DD'),
             'chip_topic_background': QColor('#56B6C2'),
