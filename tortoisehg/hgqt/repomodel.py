@@ -594,6 +594,22 @@ class HgRepoListModel(QAbstractTableModel):
                 if col == PhaseColumn:
                     return THEME.text_author
 
+                # Local Time / UTC Time
+                if col in (LocalDateColumn, UtcDateColumn):
+                    return THEME.text_author
+
+                # Changes
+                if col == ChangesColumn:
+                    return THEME.text_author
+
+                # Converted From
+                if col == ConvertedColumn:
+                    return THEME.text_author
+
+                # Topic
+                if col == TopicColumn:
+                    return THEME.text_author
+
         if role == GraphNodeRole:
             return gnode
         # repo may be changed while reading in case of postpull=rebase for
