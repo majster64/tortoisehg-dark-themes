@@ -131,8 +131,6 @@ if typing.TYPE_CHECKING:
         Union,
     )
 
-from tortoisehg.hgqt.qtgui import QApplication, QPalette, QColor
-from .theme import THEME
 
 _SELECTION_SINGLE = 'single'
 _SELECTION_PAIR = 'pair'
@@ -257,11 +255,6 @@ class RepoWidget(QWidget):
         # listen to change notification after initial settings are loaded
         repoagent.repositoryChanged.connect(self.repositoryChanged)
         repoagent.configChanged.connect(self.configChanged)
-        
-        if THEME.enabled:
-            # Load color styles (dark palette) into the global _styles table
-            repo = self._repoagent.rawRepo()
-            qtlib.configstyles(repo.ui)
 
         self._updateNamedActions()
         QTimer.singleShot(0, self._initView)
