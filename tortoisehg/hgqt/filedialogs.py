@@ -70,6 +70,7 @@ from . import (
     revpanel,
 )
 from .qscilib import Scintilla
+from .theme import THEME
 
 if typing.TYPE_CHECKING:
     from typing import (
@@ -86,11 +87,18 @@ _MARKERMINUSLINE = 30
 _MARKERPLUSUNDERLINE = 29
 _MARKERMINUSUNDERLINE = 28
 
-_colormap = {
-             '+': QColor(0xA0, 0xFF, 0xB0),
-             '-': QColor(0xFF, 0xA0, 0xA0),
-             'x': QColor(0xA0, 0xA0, 0xFF)
-             }
+if THEME.enabled:
+    _colormap = {
+        '+': THEME.diff_added_bg,
+        '-': THEME.diff_removed_bg,
+        'x': THEME.diff_added2_bg,
+    }
+else:
+    _colormap = {
+        '+': QColor(0xA0, 0xFF, 0xB0),
+        '-': QColor(0xFF, 0xA0, 0xA0),
+        'x': QColor(0xA0, 0xA0, 0xFF),
+    }
 
 def _setupFileMenu(menu, fileactions):
     for name in ['visualDiff', 'visualDiffToLocal', None,
@@ -557,6 +565,22 @@ class FileDiffDialog(_AbstractFileDialog):
                                                         _MARKERPLUSUNDERLINE)
             self.markerminusunderline = sci.markerDefine(QsciScintilla.MarkerSymbol.Invisible,
                                                          _MARKERMINUSUNDERLINE)
+
+            if THEME.enabled:
+                # Margin colors (line numbers area)
+                sci.setMarginsBackgroundColor(THEME.background)
+                sci.setMarginsForegroundColor(THEME.diff_text)
+
+                # Caret
+                sci.setCaretForegroundColor(THEME.caret_foreground)
+                sci.setCaretLineVisible(True)
+                sci.setCaretLineBackgroundColor(THEME.backgroundLighter)
+
+                # Selection
+                sci.setSelectionBackgroundColor(THEME.selection_background)
+                sci.setSelectionForegroundColor(THEME.selection_text)
+
+                qtlib.applyCustomScrollBars(sci)
 
             self.viewers[side] = sci
             blk = blockmatcher.BlockList(self.frame)

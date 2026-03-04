@@ -42,6 +42,8 @@ from . import (
     qtlib,
 )
 
+from .theme import THEME
+
 qsci = Qsci.QsciScintilla
 
 class RejectsDialog(QDialog):
@@ -61,7 +63,10 @@ class RejectsDialog(QDialog):
         editor.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         editor.customContextMenuRequested.connect(self._onMenuRequested)
         self.baseLineColor = editor.markerDefine(qsci.MarkerSymbol.Background, -1)
-        editor.setMarkerBackgroundColor(QColor('lightblue'), self.baseLineColor)
+        if THEME.enabled:
+            editor.setMarkerBackgroundColor(THEME.reject_baseline_bg, self.baseLineColor)
+        else:
+            editor.setMarkerBackgroundColor(QColor('lightblue'), self.baseLineColor)
         layout.addWidget(editor, 3)
 
         searchbar = qscilib.SearchToolBar(self)
@@ -134,6 +139,34 @@ class RejectsDialog(QDialog):
 
         editor.setMarginLineNumbers(1, True)
         editor.setMarginWidth(1, str(editor.lines())+'X')
+
+        if THEME.enabled:
+            # Margin colors (line numbers area)
+            editor.setMarginsBackgroundColor(THEME.background)
+            editor.setMarginsForegroundColor(THEME.diff_text)
+
+            # Folding markers
+            editor.setMarkerBackgroundColor(THEME.background, qsci.SC_MARKNUM_FOLDER)
+            editor.setMarkerForegroundColor(THEME.diff_text, qsci.SC_MARKNUM_FOLDER)
+            editor.setMarkerBackgroundColor(THEME.background, qsci.SC_MARKNUM_FOLDEROPEN)
+            editor.setMarkerForegroundColor(THEME.diff_text, qsci.SC_MARKNUM_FOLDEROPEN)
+
+            # Folding margin background
+            editor.setFoldMarginColors(THEME.background, THEME.config_scrollbar)
+
+            # Folding style (avoid white checkboxes)
+            editor.setFolding(qsci.FoldStyle.PlainFoldStyle)
+
+            # Caret
+            editor.setCaretForegroundColor(THEME.caret_foreground)
+            editor.setCaretLineVisible(True)
+            editor.setCaretLineBackgroundColor(THEME.backgroundLighter)
+
+            # Selection
+            editor.setSelectionBackgroundColor(THEME.selection_background)
+            editor.setSelectionForegroundColor(THEME.selection_text)
+
+            qtlib.applyCustomScrollBars(editor)
 
         buf = util.bytesio()
         try:
@@ -288,14 +321,33 @@ class RejectBrowser(qscilib.Scintilla):
         self.removedMark = self.markerDefine(qsci.MarkerSymbol.Minus, -1)
         self.addedColor = self.markerDefine(qsci.MarkerSymbol.Background, -1)
         self.removedColor = self.markerDefine(qsci.MarkerSymbol.Background, -1)
-        self.setMarkerBackgroundColor(QColor('lightgreen'), self.addedColor)
-        self.setMarkerBackgroundColor(QColor('cyan'), self.removedColor)
+        if THEME.enabled:
+            self.setMarkerBackgroundColor(THEME.diff_added_bg, self.addedColor)
+            self.setMarkerBackgroundColor(THEME.diff_removed_bg, self.removedColor)
+            # Plus/Minus marker symbol colors
+            self.setMarkerForegroundColor(THEME.diff_added, self.addedMark)
+            self.setMarkerBackgroundColor(THEME.background, self.addedMark)
+            self.setMarkerForegroundColor(THEME.diff_removed, self.removedMark)
+            self.setMarkerBackgroundColor(THEME.background, self.removedMark)
+        else:
+            self.setMarkerBackgroundColor(QColor('lightgreen'), self.addedColor)
+            self.setMarkerBackgroundColor(QColor('cyan'), self.removedColor)
         mask = (1 << self.addedMark) | (1 << self.removedMark) | \
                (1 << self.addedColor) | (1 << self.removedColor)
         self.setMarginMarkerMask(1, mask)
         lexer = lexers.difflexer(self)
         self.setFont(qtlib.getfont('fontdiff').font())
         self.setLexer(lexer)
+
+        if THEME.enabled:
+            # Margin colors
+            self.setMarginsBackgroundColor(THEME.background)
+            self.setMarginsForegroundColor(THEME.diff_text)
+
+            # Caret
+            self.setCaretForegroundColor(THEME.caret_foreground)
+
+            qtlib.applyCustomScrollBars(self)
 
     def showChunk(self, lines):
         utext = []
