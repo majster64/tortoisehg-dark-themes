@@ -882,8 +882,8 @@ def fileEditor(filename, **opts):
         editor.setCaretLineBackgroundColor(THEME.backgroundLighter)
 
         # Selection
-        editor.setSelectionBackgroundColor(THEME.text_selection)
-        editor.setSelectionForegroundColor(THEME.diff_text)
+        editor.setSelectionBackgroundColor(THEME.selection_background)
+        editor.setSelectionForegroundColor(THEME.selection_text)
 
         # Folding style (avoid white checkboxes)
         editor.setFolding(QsciScintilla.FoldStyle.PlainFoldStyle)

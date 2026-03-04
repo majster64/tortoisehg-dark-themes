@@ -93,8 +93,8 @@ class _LogWidgetForConsole(cmdui.LogWidget):
             # Basic widget colors
             self.setPaper(THEME.background)
             self.setColor(THEME.text)
-            self.setSelectionBackgroundColor(THEME.text_selection)
-            self.setSelectionForegroundColor(THEME.text)
+            self.setSelectionBackgroundColor(THEME.selection_background)
+            self.setSelectionForegroundColor(THEME.selection_text)
             self.setCaretForegroundColor(THEME.caret_foreground)
 
             # Prompt line marker background (was light blue)

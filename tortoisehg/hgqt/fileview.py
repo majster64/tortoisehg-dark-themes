@@ -174,8 +174,8 @@ class HgFileView(QFrame):
             self.sci.setPaper(THEME.background)
             self.sci.setColor(THEME.text)
 
-            self.sci.setSelectionBackgroundColor(THEME.text_selection)
-            self.sci.setSelectionForegroundColor(THEME.text)
+            self.sci.setSelectionBackgroundColor(THEME.selection_background)
+            self.sci.setSelectionForegroundColor(THEME.selection_text)
 
             self.sci.setCaretForegroundColor(THEME.caret_foreground)
 
