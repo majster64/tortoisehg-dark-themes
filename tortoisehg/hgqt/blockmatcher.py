@@ -41,10 +41,9 @@ from .qtgui import (
 from . import qtlib
 from .theme import THEME
 
-def _clampLightness(c: QColor, minL=0.45, maxL=0.75):
-    h, s, l, a = c.getHslF()
-    l = max(minL, min(l, maxL))
-    return QColor.fromHslF(h, s, l, a)
+def normalizeColorHsl(c: QColor, sat=0.35, light=0.4):
+    h, _, _, a = c.getHslF()
+    return QColor.fromHslF(h, sat, light, a)
 
 class BlockList(QWidget):
     """
@@ -66,10 +65,10 @@ class BlockList(QWidget):
         self._minimum = 0
         self._maximum = 100
         if THEME.enabled:
-            self.blockTypes = {'+': _clampLightness(THEME.diff_added_bg.lighter(500)),
-                           '-': _clampLightness(THEME.diff_added2_bg.lighter(500)),
-                           'x': _clampLightness(THEME.diff_added2_bg.lighter(500)),
-                           's': _clampLightness(THEME.diff_added_bg.lighter(500)),
+            self.blockTypes = {'+': normalizeColorHsl(THEME.diff_added_bg),
+                           '-': normalizeColorHsl(THEME.diff_added2_bg),
+                           'x': normalizeColorHsl(THEME.diff_added2_bg),
+                           's': normalizeColorHsl(THEME.diff_added_bg),
                            }
         else:
             self.blockTypes = {'+': QColor(0xA0, 0xFF, 0xB0, ),#0xa5),
@@ -197,9 +196,9 @@ class BlockMatch(BlockList):
 
         if THEME.enabled:
             self.blockTypes = {
-                '+': _clampLightness(THEME.diff_added_bg.lighter(500)),
-                '-': _clampLightness(THEME.diff_added2_bg.lighter(500)),
-                'x': _clampLightness(THEME.diff_added2_bg.lighter(500)),
+                '+': normalizeColorHsl(THEME.diff_added_bg),
+                '-': normalizeColorHsl(THEME.diff_added2_bg),
+                'x': normalizeColorHsl(THEME.diff_added2_bg),
             }
         else:
             self.blockTypes = {'+': QColor(0xA0, 0xFF, 0xB0, ),#0xa5),
