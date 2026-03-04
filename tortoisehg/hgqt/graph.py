@@ -49,7 +49,7 @@ from ..util import (
     obsoleteutil,
 )
 
-from tortoisehg.hgqt.theme import THEME
+from .theme import THEME
 
 r"""
 How each edge color is determined

@@ -12,7 +12,6 @@ import difflib
 import os
 import re
 import typing
-import sys
 
 from typing import (
     cast,
@@ -43,7 +42,6 @@ from .qtgui import (
     QMouseEvent,
     QPainter,
     QPalette,
-    QPixmap,
     QPen,
     QShortcut,
     QStyle,
@@ -1382,7 +1380,6 @@ class _AnnotateViewControl(_AbstractViewControl):
                                                maxsaturations=16,
                                                mindate=mindate,
                                                isdarktheme=self._isdarktheme)
-        
 
         for i, (color, fctxs) in enumerate(palette.items()):
             m = _FirstAnnotateLineMarker + i
@@ -1522,7 +1519,8 @@ class _ChunkSelectionViewControl(_AbstractViewControl):
         self._sci.markerDefine(p, _ExcludedChunkStartMarker)
 
         if THEME.enabled:
-            # Fix rendering of checkboxes
+            # Fix rendering of checkboxes in diff view. Default checkboxes are clipped by the margin 
+            # width which is 14px, but the actual checkbox pixmap is 16px.
             p = qtlib.getcheckboxpixmap(QStyle.StateFlag.State_On, THEME.background, sci)
             self._patch_checkbox_pixmap(p)
             self._sci.markerDefine(p, _IncludedChunkStartMarker)
@@ -1575,10 +1573,6 @@ class _ChunkSelectionViewControl(_AbstractViewControl):
 
     def open(self):
         self._sci.setMarginWidth(_ChunkSelectionMargin, 15)
-
-        if THEME.enabled:
-            self._sci.setMarginWidth(_ChunkSelectionMargin, 14) # Fix artifact on 0-th pixel
-
         self._toggleshortcut.setEnabled(True)
 
     def close(self):

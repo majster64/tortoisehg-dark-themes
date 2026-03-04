@@ -258,7 +258,6 @@ class LogWidget(qscilib.ScintillaCompat):
             # because it's a *Background* marker.
 
     def _apply_dark_console_markers(self):
-        # Dark console colors
         self.setMarkerBackgroundColor(THEME.ui_error, self._markers.get('ui.error'))
         self.setMarkerBackgroundColor(THEME.ui_warning, self._markers.get('ui.warning'))
         self.setMarkerBackgroundColor(THEME.ui_control, self._markers.get('control'))
