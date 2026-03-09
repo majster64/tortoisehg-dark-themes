@@ -1952,8 +1952,7 @@ def qMouseEventPosition(event: QMouseEvent) -> QPoint:
 class CustomScrollBar(QScrollBar):
     """Work around a Qt stylesheet bug where a large scrollbar could create a dead zone
     that prevented scrolling to the bottom.
-    The issue is caused by the `Scrollbar::handle` style parameter.
-    Also fixes smooth scrolling for the MessageEntry widget.
+    The issue occurs when any Scrollbar::handle style parameter is set.
     """
 
     def __init__(self, orientation, parent=None):
@@ -1974,14 +1973,14 @@ class CustomScrollBar(QScrollBar):
         super().mousePressEvent(event)
 
     def mouseMoveEvent(self, event):
-        rng = self.maximum() - self.minimum()
-        if self.isSliderDown() and rng > 0 and self._grab_offset is not None:
-            track = self.height() if self._isVertical() else self.width()
-            if track > 0:
+        scroll_range = self.maximum() - self.minimum()
+        if self.isSliderDown() and scroll_range > 0 and self._grab_offset is not None:
+            track_length = self.height() if self._isVertical() else self.width()
+            if track_length > 0:
                 delta = self._posFromEvent(event) - self._grab_offset
-                value = self._grab_value + (rng + self.pageStep()) * delta / track
+                new_position = self._grab_value + (scroll_range + self.pageStep()) * delta / track_length
                 self.setSliderPosition(
-                    max(self.minimum(), min(self.maximum(), round(value))))
+                    max(self.minimum(), min(self.maximum(), round(new_position))))
             return
         super().mouseMoveEvent(event)
 
@@ -2004,25 +2003,28 @@ def _connectScintillaScrollBar(sci, bar, vertical=True):
     def _sync():
         if _syncing[0]:
             return
+        if sip.isdeleted(bar) or sip.isdeleted(sci):
+            return
         if vertical:
-            total = sci.SendScintilla(sci.SCI_VISIBLEFROMDOCLINE,
-                                      sci.SendScintilla(sci.SCI_GETLINECOUNT))
-            visible = sci.SendScintilla(sci.SCI_LINESONSCREEN)
+            total_scroll_range  = sci.SendScintilla(sci.SCI_VISIBLEFROMDOCLINE, sci.SendScintilla(sci.SCI_GETLINECOUNT))
+            visible_range = sci.SendScintilla(sci.SCI_LINESONSCREEN)
             step, pos_msg = 1, sci.SCI_GETFIRSTVISIBLELINE
         else:
-            total = sci.SendScintilla(sci.SCI_GETSCROLLWIDTH)
-            visible = sci.viewport().width()
+            total_scroll_range  = sci.SendScintilla(sci.SCI_GETSCROLLWIDTH)
+            visible_range = sci.viewport().width()
             step, pos_msg = 20, sci.SCI_GETXOFFSET
-        if visible <= 0:
+        if visible_range <= 0:
             return
         _syncing[0] = True
-        bar.setRange(0, max(0, total - visible))
-        bar.setPageStep(max(1, visible))
+        bar.setRange(0, max(0, total_scroll_range  - visible_range))
+        bar.setPageStep(max(1, visible_range))
         bar.setSingleStep(step)
         bar.setValue(sci.SendScintilla(pos_msg))
         _syncing[0] = False
 
     def _onBarChanged(val):
+        if sip.isdeleted(bar) or sip.isdeleted(sci):
+            return
         if not _syncing[0]:
             _syncing[0] = True
             msg = sci.SCI_SETFIRSTVISIBLELINE if vertical else sci.SCI_SETXOFFSET
