@@ -83,6 +83,7 @@ from . import (
     resolve,
     thgrepo,
 )
+from .theme import THEME
 
 if typing.TYPE_CHECKING:
     from typing import (
@@ -1631,6 +1632,9 @@ class PathsTree(QTreeView):
         self.setDragDropMode(QTreeView.DragDropMode.DragOnly)
         self.setSelectionMode(QTreeView.SelectionMode.SingleSelection)
         self.editable = editable
+
+        if THEME.enabled:
+            qtlib.applyCustomScrollBars(self)
 
     def contextMenuEvent(self, event):
         for index in self.selectedRows():

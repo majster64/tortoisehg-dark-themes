@@ -235,7 +235,8 @@ class LogWidget(qscilib.ScintillaCompat):
         
         if THEME.enabled:
             self._apply_dark_console_markers()
-            
+            qtlib.applyCustomScrollBars(self)
+
         qscilib.unbindConflictedKeys(self)
 
     def _initfont(self):

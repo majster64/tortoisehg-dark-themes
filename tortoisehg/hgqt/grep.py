@@ -74,6 +74,7 @@ from . import (
     thgrepo,
     visdiff,
 )
+from .theme import THEME
 
 # This widget can be embedded in any application that would like to
 # provide search features
@@ -635,6 +636,9 @@ class MatchTree(QTableView):
 
         self.setModel(MatchModel(repoagent, self))
         self.selectionModel().selectionChanged.connect(self.onSelectionChanged)
+
+        if THEME.enabled:
+            qtlib.applyCustomScrollBars(self)
 
     @property
     def repo(self):

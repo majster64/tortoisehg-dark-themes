@@ -17,28 +17,40 @@ REM -------------------------------------------------
 REM list of modified files (relative to hgqt)
 REM -------------------------------------------------
 set FILES= ^
+bookmark.py ^
 blockmatcher.py ^
 chunks.py ^
 cmdui.py ^
 csinfo.py ^
 docklog.py ^
 filedata.py ^
+filedialogs.py ^
 filelistview.py ^
 fileview.py ^
 graph.py ^
+grep.py ^
+guess.py ^
+hgignore.py ^
 lexers.py ^
 merge.py ^
 messageentry.py ^
+mq.py ^
 qscilib.py ^
 qtapp.py ^
 qtlib.py ^
+rejects.py ^
 repoview.py ^
 repofilter.py ^
 repomodel.py ^
+reporegistry.py ^
+repoview.py ^
 repowidget.py ^
+resolve.py ^
+revdetails.py ^
 revpanel.py ^
 settings.py ^
 status.py ^
+sync.py ^
 theme.py ^
 workbench.py
 

@@ -52,6 +52,7 @@ from . import (
     thgrepo,
     visdiff,
 )
+from .theme import THEME
 
 if typing.TYPE_CHECKING:
     from typing import (
@@ -146,6 +147,8 @@ class ResolveDialog(QDialog):
         self.utree.setSelectionMode(QTreeView.SelectionMode.ExtendedSelection)
         self.utree.setSortingEnabled(True)
         hbox.addWidget(self.utree)
+        if THEME.enabled:
+            qtlib.applyCustomScrollBars(self.utree)
 
         self.utree.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.utreecmenu = QMenu(self)
@@ -200,6 +203,8 @@ class ResolveDialog(QDialog):
         self.rtree.setSelectionMode(QTreeView.SelectionMode.ExtendedSelection)
         self.rtree.setSortingEnabled(True)
         hbox.addWidget(self.rtree)
+        if THEME.enabled:
+            qtlib.applyCustomScrollBars(self.rtree)
 
         self.rtree.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.rtreecmenu = QMenu(self)

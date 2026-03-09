@@ -59,6 +59,7 @@ from . import (
     htmlui,
     qtlib,
 )
+from .theme import THEME
 
 # Techincal debt
 # Try to cut down on the jitter when findRenames is pressed.  May
@@ -115,6 +116,8 @@ class DetectRenameDialog(QDialog):
         self.unrevlist.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
         self.unrevlist.doubleClicked.connect(self.onUnrevDoubleClicked)
         utvbox.addWidget(self.unrevlist)
+        if THEME.enabled:
+            qtlib.applyCustomScrollBars(self.unrevlist)
 
         simhbox = QHBoxLayout()
         utvbox.addLayout(simhbox)
@@ -165,6 +168,8 @@ class DetectRenameDialog(QDialog):
         matchvbox.addWidget(matchtv)
         matchvbox.addLayout(buthbox)
         self.matchtv, self.matchbtn = matchtv, matchbtn
+        if THEME.enabled:
+            qtlib.applyCustomScrollBars(matchtv)
         def matchselect(s, d):
             count = len(matchtv.selectedIndexes())
             if count:
@@ -189,6 +194,8 @@ class DetectRenameDialog(QDialog):
         difftb.document().setDefaultStyleSheet(qtlib.thgstylesheet)
         diffvbox.addWidget(difftb)
         self.difftb = difftb
+        if THEME.enabled:
+            qtlib.applyCustomScrollBars(difftb)
 
         self.stbar = cmdui.ThgStatusBar()
         layout.addWidget(self.stbar)

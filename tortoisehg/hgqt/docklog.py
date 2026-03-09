@@ -106,6 +106,9 @@ class _LogWidgetForConsole(cmdui.LogWidget):
             self.setMarkerBackgroundColor(QColor('#e8f3fe'), self._prompt_marker)
                 
         
+        if THEME.enabled:
+            qtlib.applyCustomScrollBars(self)
+
         self.cursorPositionChanged.connect(self._updatePrompt)
         # ensure not moving prompt line even if completion list get shorter,
         # by allowing to scroll one page below the last line

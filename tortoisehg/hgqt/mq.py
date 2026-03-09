@@ -66,6 +66,7 @@ from . import (
     qfold,
     rejects,
 )
+from .theme import THEME
 
 if typing.TYPE_CHECKING:
     from typing import (
@@ -718,6 +719,8 @@ class MQPatchesWidget(QDockWidget):
         self._queueListWidget.customContextMenuRequested.connect(
             self._onMenuRequested)
         layout.addWidget(self._queueListWidget, 1)
+        if THEME.enabled:
+            qtlib.applyCustomScrollBars(self._queueListWidget)
 
         bbarhbox = QHBoxLayout()
         bbarhbox.setSpacing(5)

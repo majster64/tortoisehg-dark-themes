@@ -48,6 +48,7 @@ from . import (
     cmdcore,
     qtlib,
 )
+from .theme import THEME
 
 class BookmarkDialog(QDialog):
 
@@ -310,6 +311,8 @@ class SyncBookmarkDialog(QDialog):
             self._onOutgoingMenuRequested)
         self.outgoingList.itemSelectionChanged.connect(self._updateActions)
         outgoingLayout.addWidget(self.outgoingList)
+        if THEME.enabled:
+            qtlib.applyCustomScrollBars(self.outgoingList)
 
         self._outactions = []
         a = QAction(_('&Push Bookmark'), self)
@@ -341,6 +344,8 @@ class SyncBookmarkDialog(QDialog):
             self._onIncomingMenuRequested)
         self.incomingList.itemSelectionChanged.connect(self._updateActions)
         incomingLayout.addWidget(self.incomingList)
+        if THEME.enabled:
+            qtlib.applyCustomScrollBars(self.incomingList)
 
         self._inactions = []
         a = QAction(_('P&ull Bookmark'), self)

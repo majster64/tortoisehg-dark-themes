@@ -87,6 +87,8 @@ class RejectsDialog(QDialog):
         self.updating = True
         self.chunklist.currentRowChanged.connect(self.showChunk)
         hbox.addWidget(self.chunklist, 1)
+        if THEME.enabled:
+            qtlib.applyCustomScrollBars(self.chunklist)
 
         bvbox = QVBoxLayout()
         bvbox.setContentsMargins(2, 2, 2, 2)

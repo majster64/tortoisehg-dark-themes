@@ -66,6 +66,7 @@ from . import (
     qscilib,
     qtlib,
 )
+from .theme import THEME
 
 if typing.TYPE_CHECKING:
     from .thgrepo import RepoAgent
@@ -164,6 +165,9 @@ class HgignoreDialog(QDialog):
         unknownlist = QListWidget()
         uvbox.addWidget(unknownlist)
         unknownlist.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
+        if THEME.enabled:
+            qtlib.applyCustomScrollBars(ignorelist)
+            qtlib.applyCustomScrollBars(unknownlist)
         unknownlist.currentTextChanged.connect(self.setGlobFilter)
         unknownlist.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         unknownlist.customContextMenuRequested.connect(self.menuRequest)

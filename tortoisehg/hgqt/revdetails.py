@@ -60,6 +60,7 @@ from . import (
     qtlib,
     status,
 )
+from .theme import THEME
 from .filelistview import HgFileListView
 from .fileview import HgFileView
 from .revpanel import RevPanelWidget
@@ -186,6 +187,9 @@ class RevDetailsWidget(QWidget, qtlib.TaskWidget):
         f = qtlib.getfont('fontcomment')
         self.message.setFont(f.font())
         f.changed.connect(self.forwardFont)
+
+        if THEME.enabled:
+            qtlib.applyCustomScrollBars(self.message)
 
         self.fileview = HgFileView(self._repoagent, self.messagesplitter)
         self.messagesplitter.setStretchFactor(1, 1)

@@ -209,6 +209,7 @@ class StatusWidget(QWidget):
         
         if THEME.enabled:
             tv.setItemDelegate(WctxPreserveStatusColorDelegate(tv))
+            qtlib.applyCustomScrollBars(tv)
             
         vbox.addLayout(hbox)
         vbox.addWidget(tv)

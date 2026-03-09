@@ -87,6 +87,7 @@ from . import (
     qtlib,
     thgrepo,
 )
+from .theme import THEME
 
 if typing.TYPE_CHECKING:
     from typing import (
@@ -1525,6 +1526,8 @@ class SettingsForm(QWidget):
         stack = QStackedWidget()
         bothbox.addWidget(pageList, 0)
         bothbox.addWidget(stack, 1)
+        if THEME.enabled:
+            qtlib.applyCustomScrollBars(pageList)
         pageList.currentRowChanged.connect(self.activatePage)
 
         self.pages = {}
@@ -1536,6 +1539,8 @@ class SettingsForm(QWidget):
         desctext.setOpenExternalLinks(True)
         layout.addWidget(desctext, 2)
         self.desctext = desctext
+        if THEME.enabled:
+            qtlib.applyCustomScrollBars(desctext)
 
         self.settings = QSettings()
 

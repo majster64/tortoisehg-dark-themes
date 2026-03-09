@@ -58,6 +58,7 @@ from . import (
     repotreemodel,
     settings,
 )
+from .theme import THEME
 
 def settingsfilename():
     """Return path to thg-reporegistry.xml as unicode"""
@@ -94,6 +95,9 @@ class RepoTreeView(QTreeView):
         self.setEditTriggers(QAbstractItemView.EditTrigger.DoubleClicked
                              | QAbstractItemView.EditTrigger.EditKeyPressed)
         self.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+
+        if THEME.enabled:
+            qtlib.applyCustomScrollBars(self)
 
     def dragEnterEvent(self, event):
         if event.source() is self:
