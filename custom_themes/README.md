@@ -1,40 +1,24 @@
 # Custom Themes
 
-This mod adds support for **custom themes** and **overrides of built-in themes**
-to TortoiseHg via `mercurial.ini`.
-
-Application restart is required.
-
-Supported color formats: `#RRGGBB`, `rgb(r, g, b)`  
-Invalid values are ignored safely.
-
----
-
-## Custom Theme
-
-Create a new theme by adding a section to `mercurial.ini`:
+Create your own themes by adding a section to `hgrc or mercurial.ini`.
+Supported color formats: `#RRGGBB`, `rgb(r, g, b)`. Restart required.
 
 ```ini
-[theme.mytheme]
-background = #1e1e1e
-text = #d4d4d4
-diff_added = #58b62d
-diff_removed = #c23a28
+[theme.dark_purple]
+background = #1A1423
+backgroundLighter = #221A2E
+text = #BCA9D6
+text_disabled = #6F6780
+text_margin = #7E6F99
+text_author = #8C7BAA
+text_description = #BCA9D6
+selection_background = #2E2040
+control_background = #221A2E
+control_border = #3A2C4D
 ```
 
-Only the colors you specify are overridden.
-All missing values are inherited from the built-in dark theme.
-Colors can also be defined using the rgb(r, g, b) format:
-
-```ini
-[theme.mytheme]
-background = rgb(30, 30, 30)
-text = rgb(212, 212, 212)
-diff_added = rgb(88, 182, 45)
-diff_removed = rgb(194, 58, 40)
-```
-
-This example overrides the built-in dark theme:
+Only specified colors are overridden - missing values inherit from the built-in dark theme.
+You can also override built-in themes directly:
 
 ```ini
 [theme.dark]
@@ -44,25 +28,9 @@ control_text = rgb(163, 187, 201)
 
 ---
 
-## Built-in Theme Reference
+## Reference
 
-`builtin_themes.txt` is a helper file that contains colors in `rgb()` format
-instead of hex codes. It provides ready-to-copy theme sections for
-`mercurial.ini`.
-
-Built-in themes are implemented in `theme.py` (internal, not user-editable).
-
----
-
-## Theme Color Key Reference
-
-The following screenshot shows a visual mapping between UI elements
-and their corresponding theme color keys.
-
-Each highlighted element is marked with a number.  
-The legend on the right lists the matching theme key for each number.
-
-This makes it easy to identify which key to override in `mercurial.ini`
-without guessing or trial and error.
+- `builtin_themes.txt` contains ready-to-copy theme sections for `hgrc/mercurial.ini`
+- Color key mapping of UI elements to theme keys:
 
 ![Theme color key reference](theme_color_keys.png)

@@ -151,7 +151,6 @@ Inside TortoiseHg:
 
 - This setup does not integrate TortoiseHg into the system file manager
   (Nautilus / Dolphin context menus).
-- Dialogs opened via the system file manager (e.g. Visual Diff, Annotate, Revision History) do not follow the dark theme.
 
 ## Uninstall
 
