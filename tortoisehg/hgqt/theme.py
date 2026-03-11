@@ -22,7 +22,6 @@
 import re
 from typing import Optional
 
-from .qtcore import QSettings
 from .qtgui import QColor
 
 from tortoisehg.util import hglib
@@ -520,7 +519,7 @@ THEME_KEYS = tuple(
     next(iter(BUILTIN_THEMES.values()))['colors'].keys()
 )
 
-_THEME_NAME_RE = re.compile(r'^[a-z0-9_]+$')
+_THEME_NAME_RE = re.compile(r'^[a-zA-Z0-9_]+$')
 
 
 # ----------------------------------------------------------------------
@@ -580,22 +579,27 @@ def _parse_color(value: str) -> Optional[QColor]:
 # ----------------------------------------------------------------------
 
 def available_themes():
-    settings = QSettings()
     themes = set(BUILTIN_THEMES.keys())
 
-    for group in settings.childGroups():
-        if not group.startswith('theme.'):
-            continue
+    # Scan mercurial config (mercurial.ini / .hgrc) for [theme.*] sections
+    try:
+        ui = hglib.loadui()
+        for section in ui._ucfg.sections():
+            s = pycompat.sysstr(section) if isinstance(section, bytes) else section
+            if not s.startswith('theme.'):
+                continue
 
-        name = group[6:].lower()
+            name = s[6:]
 
-        if len(name) < 2:
-            continue
+            if len(name) < 2:
+                continue
 
-        if not _THEME_NAME_RE.match(name):
-            continue
+            if not _THEME_NAME_RE.match(name):
+                continue
 
-        themes.add(name)
+            themes.add(name)
+    except Exception:
+        pass
 
     return sorted(themes)
 
@@ -609,10 +613,10 @@ def load_theme_colors() -> ThemeColors:
 
     name = pycompat.sysstr(
         ui.config(b'ui', b'theme', b'default')
-    ).lower()
+    )
 
     # Special value: disable theming
-    if name == 'default':
+    if name.lower() == 'default':
         return ThemeColors(enabled=False)
 
     # Always start from the first built-in theme as base
@@ -623,7 +627,16 @@ def load_theme_colors() -> ThemeColors:
     if 'colors' not in base or not base['colors']:
         return ThemeColors(enabled=False)
     
-    overlay = BUILTIN_THEMES.get(name)
+    # Built-in themes use lowercase keys
+    overlay = BUILTIN_THEMES.get(name) or BUILTIN_THEMES.get(name.lower())
+
+    # Find the actual section name in mercurial config (case-sensitive)
+    ini_section = None
+    for sect in ui._ucfg.sections():
+        s = pycompat.sysstr(sect) if isinstance(sect, bytes) else sect
+        if s.lower() == ('theme.' + name).lower():
+            ini_section = sect
+            break
 
     theme = ThemeColors(enabled=True)
 
@@ -634,18 +647,18 @@ def load_theme_colors() -> ThemeColors:
     if overlay:
         colors.update(overlay.get('colors', {}))
 
-    # Load overrides from .ini
-    section = b'theme.' + pycompat.sysbytes(name)
-    for k, v in (ui.configitems(section) or []):
-        key = pycompat.sysstr(k)
-        val = pycompat.sysstr(v)
+    # Load overrides from .ini (use actual section name from config)
+    if ini_section is not None:
+        for k, v in (ui.configitems(ini_section) or []):
+            key = pycompat.sysstr(k)
+            val = pycompat.sysstr(v)
 
-        if key not in THEME_KEYS:
-            continue
+            if key not in THEME_KEYS:
+                continue
 
-        color = _parse_color(val)
-        if color:
-            colors[key] = color
+            color = _parse_color(val)
+            if color:
+                colors[key] = color
 
     for key, color in colors.items():
         setattr(theme, key, color)
