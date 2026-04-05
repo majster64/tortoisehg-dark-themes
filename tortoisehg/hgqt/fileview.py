@@ -1099,6 +1099,7 @@ class _MessageViewControl(_AbstractViewControl):
             self._sci.IndicatorStyle.PlainIndicator)
         self._sci.setIndicatorDrawUnder(True, self._forceviewindicator)
         self._sci.setIndicatorForegroundColor(
+            THEME.ui_info if THEME.enabled else QColor('blue'), self._forceviewindicator)
 
     @pyqtSlot()
     def _requestForceDisplay(self):

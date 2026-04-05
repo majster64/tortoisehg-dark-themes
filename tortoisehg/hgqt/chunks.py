@@ -783,7 +783,7 @@ class DiffBrowser(QFrame):
             self._forceviewindicator = self.sci.indicatorDefine(self.sci.IndicatorStyle.PlainIndicator)
             self.sci.setIndicatorDrawUnder(True, self._forceviewindicator)
             self.sci.setIndicatorForegroundColor(
-                QColor('blue'), self._forceviewindicator)
+                THEME.ui_info if THEME.enabled else QColor('blue'), self._forceviewindicator)
             # delay until next event-loop in order to complete mouse release
             self.sci.SCN_INDICATORRELEASE.connect(self.forceDisplayFile,
                                                   Qt.ConnectionType.QueuedConnection)
