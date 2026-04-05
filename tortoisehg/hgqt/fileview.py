@@ -1043,13 +1043,14 @@ class _MessageViewControl(_AbstractViewControl):
         super().__init__(parent)
         self._sci = sci
         self._forceviewindicator = None
+        self._forceviewconnected = False
 
     def open(self):
         self._sci.setFont(qtlib.getfont('fontlog').font())
         self._sci.setLexer(None)
 
     def close(self):
-        pass
+        self._disconnectForceViewIndicator()
 
     def display(self, fd):
         if not fd.isValid():
@@ -1060,12 +1061,36 @@ class _MessageViewControl(_AbstractViewControl):
             if linkstart >= 0:
                 # add the link to force to view the data anyway
                 self._setupForceViewIndicator()
+                self._connectForceViewIndicator()
                 self._sci.fillIndicatorRange(
                     0, linkstart, 0, linkstart + len(forcedisplaymsg),
                     self._forceviewindicator)
+            else:
+                self._disconnectForceViewIndicator()
         elif fd.ucontents:
+            self._disconnectForceViewIndicator()
             # subrepo summary and perhaps other data
             self._sci.setText(fd.ucontents)
+        else:
+            self._disconnectForceViewIndicator()
+
+    def _connectForceViewIndicator(self):
+        if self._forceviewconnected:
+            return
+        # delay until next event-loop in order to complete mouse release
+        self._sci.SCN_INDICATORRELEASE.connect(
+            self._requestForceDisplay,
+            Qt.ConnectionType.QueuedConnection)
+        self._forceviewconnected = True
+
+    def _disconnectForceViewIndicator(self):
+        if not self._forceviewconnected:
+            return
+        try:
+            self._sci.SCN_INDICATORRELEASE.disconnect(self._requestForceDisplay)
+        except (TypeError, RuntimeError):
+            pass
+        self._forceviewconnected = False
 
     def _setupForceViewIndicator(self):
         if self._forceviewindicator is not None:
@@ -1074,13 +1099,11 @@ class _MessageViewControl(_AbstractViewControl):
             self._sci.IndicatorStyle.PlainIndicator)
         self._sci.setIndicatorDrawUnder(True, self._forceviewindicator)
         self._sci.setIndicatorForegroundColor(
-            QColor('blue'), self._forceviewindicator)
-        # delay until next event-loop in order to complete mouse release
-        self._sci.SCN_INDICATORRELEASE.connect(self._requestForceDisplay,
-                                               Qt.ConnectionType.QueuedConnection)
 
     @pyqtSlot()
     def _requestForceDisplay(self):
+        if not self._forceviewconnected:
+            return
         self._sci.setText(_('Please wait while the file is opened ...'))
         # Wait a little to ensure that the "wait message" is displayed
         QTimer.singleShot(10, self.forceDisplayRequested)
