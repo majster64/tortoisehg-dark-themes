@@ -1,19 +1,22 @@
 # TortoiseHg Dark Themes
 
-Dark theme support for TortoiseHg 7.0.1
+Dark theme support for the TortoiseHg 7.0.1 on Windows and Linux.
+
+This project adds a dark UI to the TortoiseHg Workbench and includes six built-in themes, installation guides, screenshots, and custom theme documentation.
 
 ## Features
 
- - 6 built-in dark themes
- - 1-minute installation
- - tested on Windows 10/11 and Ubuntu 22.04
+ - 6 built-in dark themes for TortoiseHg Workbench
+ - quick installation on Windows
+ - tested on Windows 10, Windows 11, and Ubuntu 22.04
  - works with PyQt5 and PyQt6
 
-![Dark](screenshots/Win11_1_dark.png)
+### Default Dark Theme for TortoiseHg Workbench
+![Default dark theme for TortoiseHg Workbench on Windows](screenshots/tortoisehg-dark-theme-windows.png)
 
 ## Installation on Linux
 
-See [linux/README.md](linux/README.md)
+See the [Linux installation guide for TortoiseHg dark themes](linux/README.md).
 
 
 ## Installation on Windows (Recommended)
@@ -37,26 +40,34 @@ See [linux/README.md](linux/README.md)
 
 ---
 
-
 ## Custom Themes
 
-For custom themes, see: [custom_themes/README.md](custom_themes/README.md)
+See the [custom TortoiseHg theme guide](custom_themes/README.md) to create your own themes.
 
 ---
 
 ## Screenshots
 
-![Dark VSCode](screenshots/Win11_2_dark_vscode.png)
-![Dark Gruvbox](screenshots/Win11_3_dark_gruvbox.png)
-![Dark Dracula](screenshots/Win11_4_dark_dracula.png)
-![Dark One Dark](screenshots/Win11_5_dark_onedark.png)
-![Dark Nord](screenshots/Win11_6_dark_nord.png)
+### Midnight Theme
+![Midnight dark theme for TortoiseHg on Windows](screenshots/tortoisehg-dark-theme-midnight-windows.png)
+
+### Gruvbox Theme
+![Gruvbox dark theme for TortoiseHg on Windows](screenshots/tortoisehg-dark-theme-gruvbox-windows.png)
+
+### Cobalt Theme
+![Cobalt dark theme for TortoiseHg on Windows](screenshots/tortoisehg-dark-theme-cobalt-windows.png)
+
+### Graphite Theme
+![Graphite dark theme for TortoiseHg on Windows](screenshots/tortoisehg-dark-theme-graphite-windows.png)
+
+### Nord Theme
+![Nord dark theme for TortoiseHg on Windows](screenshots/tortoisehg-dark-theme-nord-windows.png)
+
 
 ## Known limitations
-
 - On Windows 10, the window title bar remains black and cannot be recolored due to OS limitations.
 
 ---
 
 Screenshot from Windows 10
-![Dark](screenshots/1_dark.png)
+![TortoiseHg dark theme screenshot on Windows 10](screenshots/1_dark.png)
