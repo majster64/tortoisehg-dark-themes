@@ -121,7 +121,7 @@ BUILTIN_THEMES = {
         },
     },
 
-    'dark_vscode': {
+    'dark_midnight': {
         'colors': {
 
             # --- Core UI and text ---
@@ -199,7 +199,7 @@ BUILTIN_THEMES = {
         },
     },
 
-    'dark_dracula': {
+    'dark_cobalt': {
         'colors': {
 
             # --- Core UI and text ---
@@ -432,7 +432,7 @@ BUILTIN_THEMES = {
         },
     },
 
-    'dark_onedark': {
+    'dark_graphite': {
         'colors': {
 
             # --- Core UI and text ---
