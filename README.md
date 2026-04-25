@@ -1,8 +1,6 @@
-# TortoiseHg Dark Themes
+# TortoiseHg Dark Theme for Windows and Linux (version 7.0.1+)
 
-Dark theme support for the TortoiseHg 7.0.1 on Windows and Linux.
-
-This project adds a dark UI to the TortoiseHg Workbench and includes six built-in themes, installation guides, screenshots, and custom theme documentation.
+This project adds a complete dark UI mode for the TortoiseHg Workbench. 
 
 ## Features
 
@@ -10,9 +8,10 @@ This project adds a dark UI to the TortoiseHg Workbench and includes six built-i
  - quick installation on Windows
  - tested on Windows 10, Windows 11, and Ubuntu 22.04
  - works with PyQt5 and PyQt6
+ - custom theme support
 
-### Default Dark Theme for TortoiseHg Workbench
-![Default dark theme for TortoiseHg Workbench on Windows](screenshots/tortoisehg-dark-theme-windows.png)
+### Dark Theme for TortoiseHg Workbench
+![Dark theme for TortoiseHg Workbench on Windows](screenshots/tortoisehg-dark-theme-windows.png)
 
 ## Installation on Linux
 
