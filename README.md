@@ -1,6 +1,8 @@
 # TortoiseHg Dark Theme for Windows and Linux (version 7.0.1+)
 
-This project adds a complete dark UI mode for the TortoiseHg Workbench. 
+This project adds a complete dark UI mode for the TortoiseHg Workbench.
+
+View full project on GitHub: <a href="https://github.com/majster64/tortoisehg-dark-themes">   github.com/majster64/tortoisehg-dark-themes </a>
 
 ## Features
 
@@ -21,10 +23,10 @@ See the [Linux installation guide for TortoiseHg dark themes](linux/README.md).
 ## Installation on Windows (Recommended)
 
 1. Install **[TortoiseHg 7.0.1](https://tortoisehg.bitbucket.io)** and **[7-Zip](https://7-zip.org)** to their default locations
-2. Download this repository as a zip and extract it to a path without spaces (e.g. `C:\Projects\tortoisehg-dark-themes`)
-3. Run `tools\install_and_run_on_windows.bat` **as Administrator**
-4. Select a theme in: **File / Settings / Workbench / Theme** (restart required)
-
+2. Download this repository: <a href="https://github.com/majster64/tortoisehg-dark-themes/archive/refs/heads/main.zip"> Download ZIP </a>
+3. Extract it to a path without spaces (e.g. `C:\Projects\tortoisehg-dark-themes`)
+4. Run `tools\install_and_run_on_windows.bat` **as Administrator**
+5. Select a theme in: **File / Settings / Workbench / Theme** (restart required)
 > Without Administrator rights, the patched `library.zip` is created in the repo but not copied automatically. Copy it manually to `C:\Program Files\TortoiseHg\lib\`.
 
 ---
