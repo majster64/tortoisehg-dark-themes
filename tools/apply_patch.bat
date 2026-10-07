@@ -17,6 +17,7 @@ REM -------------------------------------------------
 REM list of modified files (relative to hgqt)
 REM -------------------------------------------------
 set FILES= ^
+backout.py ^
 bookmark.py ^
 blockmatcher.py ^
 chunks.py ^

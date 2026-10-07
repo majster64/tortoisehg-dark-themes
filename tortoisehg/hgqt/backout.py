@@ -44,6 +44,8 @@ from . import (
     wctxcleaner,
 )
 
+from .theme import DarkThemeWizard, THEME
+
 if typing.TYPE_CHECKING:
     from typing import (
         Optional,
@@ -74,7 +76,7 @@ def checkrev(repo: localrepo.localrepository, rev: int) -> Optional[str]:
         return _('Cannot backout change on a different branch')
 
 
-class BackoutDialog(QWizard):
+class BackoutDialog(DarkThemeWizard):
 
     def __init__(self,
                  repoagent: RepoAgent,
@@ -221,6 +223,9 @@ class SummaryPage(BasePage):
         def markup_func(widget, item, value):
             if item == 'ishead' and value is False:
                 text = _('Not a head, backout will create a new head!')
+                if THEME.enabled:
+                    return qtlib.markup(
+                        text, fg=THEME.warning_text.name(), weight='bold')
                 return qtlib.markup(text, fg='red', weight='bold')
             raise csinfo.UnknownItem(item)
         custom = csinfo.custom(markup=markup_func)

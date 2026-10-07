@@ -50,11 +50,11 @@ from . import (
     wctxcleaner,
 )
 
-from .theme import THEME
+from .theme import DarkThemeWizard, THEME
 
 MARGINS = (8, 0, 0, 0)
 
-class MergeDialog(QWizard):
+class MergeDialog(DarkThemeWizard):
 
     def __init__(self, repoagent, otherrev, parent=None):
         super().__init__(parent)

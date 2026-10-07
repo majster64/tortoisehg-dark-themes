@@ -22,7 +22,8 @@
 import re
 from typing import Optional
 
-from .qtgui import QColor
+from .qtcore import QEvent
+from .qtgui import QColor, QPalette, QPushButton, QWizard, QWidget
 
 from tortoisehg.util import hglib
 from mercurial import pycompat
@@ -681,3 +682,56 @@ def get_theme() -> ThemeColors:
 
 # This will be called on module import
 THEME = get_theme()
+
+
+class DarkThemeWizard(QWizard):
+    def _apply_dark_palette(self):
+        palette = self.palette()
+        palette.setColor(QPalette.ColorRole.Window, THEME.control_background)
+        palette.setColor(QPalette.ColorRole.Base, THEME.control_background)
+        palette.setColor(QPalette.ColorRole.Button, THEME.control_background)
+        palette.setColor(QPalette.ColorRole.WindowText, THEME.control_text)
+        palette.setColor(QPalette.ColorRole.Text, THEME.control_text)
+        palette.setColor(QPalette.ColorRole.ButtonText, THEME.control_text)
+        self.setPalette(palette)
+
+        widgets = self.findChildren(QWidget)
+        for child in widgets:
+            child.setPalette(palette)
+            if child.parent() is self or child.metaObject().className() == 'QWizardHeader':
+                child.setAutoFillBackground(True)
+
+        surface = next((widget for widget in widgets
+                        if widget.parent() is self), None)
+        if surface is not None:
+            surface.setStyleSheet(
+                f'background-color: {THEME.control_background.name()};')
+            header = next((widget for widget in widgets
+                           if widget.parent() is surface
+                           and widget.backgroundRole() == QPalette.ColorRole.Base),
+                          None)
+            if header is not None:
+                header.setStyleSheet(
+                    f'background-color: {THEME.header_background.name()};')
+
+        for button in self.findChildren(QPushButton):
+            button.setStyleSheet(
+                f'QPushButton:hover {{ background-color: '
+                f'{THEME.control_hover.name()}; }}'
+                f'QPushButton:pressed {{ background-color: '
+                f'{THEME.control_pressed.name()}; }}')
+
+    def event(self, event):
+        if THEME.enabled and event.type() == QEvent.Type.Show:
+            self.setProperty('_q_wizard_vista_off', True)
+            self.setWizardStyle(QWizard.WizardStyle.ModernStyle)
+            self._apply_dark_palette()
+
+        result = super().event(event)
+
+        if THEME.enabled and event.type() == QEvent.Type.Show:
+            self.setProperty('_q_wizard_vista_off', True)
+            self.setWizardStyle(QWizard.WizardStyle.ModernStyle)
+            self._apply_dark_palette()
+
+        return result
